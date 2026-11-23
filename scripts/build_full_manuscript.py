@@ -3,7 +3,7 @@
 Full Assembly Script for Expanded IEEE Journal Manuscript & Camera-Ready HTML/PDF.
 Converts Markdown and modular sections into:
 1. research-discovery/edge_cascade_ieee_manuscript.md (clean academic Markdown)
-2. research-discovery/edge_cascade_ieee_print.html (publication-grade IEEE two-column HTML)
+2. research-discovery/edge_cascade_ieee_print.html (publication-grade IEEE two-column HTML with zero cut-off tables)
 3. research-discovery/EdgeCascade_IEEE_Paper.pdf (rendered via Headless Chrome)
 """
 import sys
@@ -25,6 +25,7 @@ from sections.sec8_qualitative import get_sec8
 from sections.sec9_discussion import get_sec9
 from sections.sec10_conclusion import get_sec10
 from sections.references import get_references
+from render_tables_and_figures import match_and_render_block
 
 def build_markdown():
     title = "# EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on 6 GB Consumer GPUs\n\n"
@@ -161,7 +162,6 @@ def format_inline_math(text):
             raw = re.sub(p, r, raw)
         return f'<i>{raw}</i>'
     
-    # Also clean \blacksquare outside math
     text = text.replace(r'\blacksquare', '&#9632;')
     return re.sub(r'\$([^$]+)\$', replace_math, text)
 
@@ -271,6 +271,14 @@ def build_html(full_md):
     column-fill: balance;
   }
   
+  .wide-element {
+    column-span: all;
+    width: 100%;
+    margin: 10pt 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
   h2.sec-heading {
     font-size: 10pt;
     font-weight: bold;
@@ -317,32 +325,131 @@ def build_html(full_md):
     text-align: right;
   }
   
-  .figure-box {
-    width: 100%;
-    border: 0.8pt solid #333;
-    background: #fbfbfb;
-    padding: 5pt;
-    margin: 7pt 0;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 6.8pt;
-    line-height: 1.12;
-    white-space: pre;
-    overflow-x: hidden;
+  /* IEEE Table Styles */
+  .table-wrapper {
+    margin: 9pt 0;
+    page-break-inside: avoid;
     break-inside: avoid;
   }
   
-  .algorithm-box {
+  .table-caption {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 8pt;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 2pt;
+    letter-spacing: 0.3px;
+  }
+  
+  .table-subtitle {
+    font-size: 7.5pt;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+  }
+  
+  table.ieee-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 7.5pt;
+    line-height: 1.15;
+    border-top: 1.2pt solid #000;
+    border-bottom: 1.2pt solid #000;
+    margin: 0 auto;
+  }
+  
+  table.ieee-table th {
+    border-bottom: 0.8pt solid #000;
+    padding: 3.5pt 4pt;
+    font-weight: bold;
+    text-align: left;
+    background: #fafafa;
+    vertical-align: bottom;
+  }
+  
+  table.ieee-table td {
+    padding: 3pt 4pt;
+    border-bottom: 0.3pt solid #e0e0e0;
+    vertical-align: middle;
+  }
+  
+  table.ieee-table tr.highlight-row td {
+    background: #f7fafc;
+    border-bottom: 0.8pt solid #000;
+  }
+  
+  /* Figure Styles */
+  .figure-wrapper {
+    margin: 9pt 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    text-align: center;
+  }
+  
+  .figure-graphic-box {
+    width: 100%;
+    border: 0.8pt solid #cbd5e0;
+    background: #fff;
+    padding: 6pt;
+    border-radius: 2pt;
+  }
+  
+  .figure-caption {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 8pt;
+    font-style: italic;
+    text-align: center;
+    margin-top: 4pt;
+    line-height: 1.15;
+  }
+  
+  /* Algorithm Styles */
+  .algorithm-container {
     width: 100%;
     border-top: 1.2pt solid #000;
     border-bottom: 1.2pt solid #000;
-    background: #fafafa;
-    padding: 4pt 5pt;
-    margin: 7pt 0;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 7.0pt;
-    line-height: 1.15;
-    white-space: pre-wrap;
+    background: #fdfdfd;
+    padding: 5pt 7pt;
+    margin: 8pt 0;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 7.5pt;
+    line-height: 1.20;
+    page-break-inside: avoid;
     break-inside: avoid;
+  }
+  
+  .algorithm-header {
+    font-weight: bold;
+    font-size: 8pt;
+    margin-bottom: 2pt;
+  }
+  
+  .algorithm-divider {
+    border-bottom: 0.6pt solid #000;
+    margin-bottom: 3pt;
+  }
+  
+  .algorithm-body {
+    padding: 2pt 0;
+  }
+  
+  .alg-line {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 7.2pt;
+    line-height: 1.25;
+  }
+  
+  .alg-num {
+    color: #4a5568;
+    display: inline-block;
+    width: 18pt;
+    font-family: "Courier New", Courier, monospace;
+  }
+  
+  .alg-comment {
+    color: #718096;
+    font-style: italic;
   }
   
   .proof-box {
@@ -425,14 +532,8 @@ def build_html(full_md):
                 if in_code:
                     in_code = False
                     code_content = "\n".join(code_block)
-                    if "TABLE " in code_content:
-                        body_html_parts.append(f'<div class="figure-box">{code_content}</div>\n')
-                    elif "ALGORITHM " in code_content:
-                        body_html_parts.append(f'<div class="algorithm-box">{code_content}</div>\n')
-                    elif "FIGURE " in code_content:
-                        body_html_parts.append(f'<div class="figure-box">{code_content}</div>\n')
-                    else:
-                        body_html_parts.append(f'<div class="algorithm-box">{code_content}</div>\n')
+                    rendered_block = match_and_render_block(code_content)
+                    body_html_parts.append(rendered_block + '\n')
                     code_block = []
                 else:
                     in_code = True

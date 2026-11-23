@@ -100,6 +100,14 @@
     column-fill: balance;
   }
   
+  .wide-element {
+    column-span: all;
+    width: 100%;
+    margin: 10pt 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
   h2.sec-heading {
     font-size: 10pt;
     font-weight: bold;
@@ -146,32 +154,131 @@
     text-align: right;
   }
   
-  .figure-box {
-    width: 100%;
-    border: 0.8pt solid #333;
-    background: #fbfbfb;
-    padding: 5pt;
-    margin: 7pt 0;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 6.8pt;
-    line-height: 1.12;
-    white-space: pre;
-    overflow-x: hidden;
+  /* IEEE Table Styles */
+  .table-wrapper {
+    margin: 9pt 0;
+    page-break-inside: avoid;
     break-inside: avoid;
   }
   
-  .algorithm-box {
+  .table-caption {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 8pt;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin-bottom: 2pt;
+    letter-spacing: 0.3px;
+  }
+  
+  .table-subtitle {
+    font-size: 7.5pt;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+  }
+  
+  table.ieee-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 7.5pt;
+    line-height: 1.15;
+    border-top: 1.2pt solid #000;
+    border-bottom: 1.2pt solid #000;
+    margin: 0 auto;
+  }
+  
+  table.ieee-table th {
+    border-bottom: 0.8pt solid #000;
+    padding: 3.5pt 4pt;
+    font-weight: bold;
+    text-align: left;
+    background: #fafafa;
+    vertical-align: bottom;
+  }
+  
+  table.ieee-table td {
+    padding: 3pt 4pt;
+    border-bottom: 0.3pt solid #e0e0e0;
+    vertical-align: middle;
+  }
+  
+  table.ieee-table tr.highlight-row td {
+    background: #f7fafc;
+    border-bottom: 0.8pt solid #000;
+  }
+  
+  /* Figure Styles */
+  .figure-wrapper {
+    margin: 9pt 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    text-align: center;
+  }
+  
+  .figure-graphic-box {
+    width: 100%;
+    border: 0.8pt solid #cbd5e0;
+    background: #fff;
+    padding: 6pt;
+    border-radius: 2pt;
+  }
+  
+  .figure-caption {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 8pt;
+    font-style: italic;
+    text-align: center;
+    margin-top: 4pt;
+    line-height: 1.15;
+  }
+  
+  /* Algorithm Styles */
+  .algorithm-container {
     width: 100%;
     border-top: 1.2pt solid #000;
     border-bottom: 1.2pt solid #000;
-    background: #fafafa;
-    padding: 4pt 5pt;
-    margin: 7pt 0;
-    font-family: "Courier New", Courier, monospace;
-    font-size: 7.0pt;
-    line-height: 1.15;
-    white-space: pre-wrap;
+    background: #fdfdfd;
+    padding: 5pt 7pt;
+    margin: 8pt 0;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 7.5pt;
+    line-height: 1.20;
+    page-break-inside: avoid;
     break-inside: avoid;
+  }
+  
+  .algorithm-header {
+    font-weight: bold;
+    font-size: 8pt;
+    margin-bottom: 2pt;
+  }
+  
+  .algorithm-divider {
+    border-bottom: 0.6pt solid #000;
+    margin-bottom: 3pt;
+  }
+  
+  .algorithm-body {
+    padding: 2pt 0;
+  }
+  
+  .alg-line {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 7.2pt;
+    line-height: 1.25;
+  }
+  
+  .alg-num {
+    color: #4a5568;
+    display: inline-block;
+    width: 18pt;
+    font-family: "Courier New", Courier, monospace;
+  }
+  
+  .alg-comment {
+    color: #718096;
+    font-style: italic;
   }
   
   .proof-box {
@@ -261,19 +368,73 @@
 <h3 class="subsec-heading">D. Operating System Memory Virtualization & WDDM Paging Dynamics</h3>
 <p>A critical yet frequently overlooked dimension in edge deep learning systems is the interaction between the runtime inference engine and the host operating system's graphics kernel [33]. In Linux environments, the Direct Rendering Manager (DRM) and Kernel Mode Setting (KMS) provide granular, low-level control over memory allocations via unified memory buffers and IOCTL calls. In contrast, the consumer personal computing ecosystem is overwhelmingly dominated by Microsoft Windows, where GPU access is mediated by the Windows Display Driver Model (WDDM 3.x) [11], [21].</p>
 <p>Under WDDM, the Video Memory Manager (`VidMm`) virtualizes GPU memory, treating physical VRAM as a dynamic cache backed by host system paging files. When a user process requests a GPU memory allocation that exceeds available physical VRAM, WDDM does not immediately return an out-of-memory error. Instead, `VidMm` evicts existing memory allocations to system RAM via asynchronous direct memory access (DMA) transfers across the PCIe bus. When the evicted memory pages are subsequently referenced by a GPU execution packet, a hard GPU page fault occurs, stalling the graphics execution engine until the pages are swapped back into VRAM. Under continuous inference workloads, this dynamic paging induces catastrophic memory thrashing, driving GPU utilization to 100% while execution throughput collapses by <i>95\%</i>. Furthermore, if an execution packet is stalled by page fault servicing for longer than the operating system timeout threshold (typically 2.0 seconds), the WDDM watchdog mechanism triggers a Timeout Detection and Recovery (TDR) event, forcibly resetting the GPU driver and terminating the calling process. EdgeCascade addresses this vulnerability directly through proactive, deterministic driver synchronization.</p>
-<div class="figure-box">+------------------------------------------------------------------------------------------------------------------------+
-|                                  TABLE I: ARCHITECTURAL COMPARISON OF EDGE INFERENCE PARADIGMS                         |
-+----------------------+--------------------+--------------------+--------------------+--------------------+-------------+
-| System Architecture  | Target Hardware    | Max Concurrent     | Memory Allocation  | Multi-Model        | OOM Safety  |
-|                      | Memory Tier        | Parameter Capacity | Strategy           | Co-residency       | Guarantee   |
-+----------------------+--------------------+--------------------+--------------------+--------------------+-------------+
-| vLLM [25]            | Server GPU (>=24GB)| Static VRAM Bound  | PagedAttention     | Co-resident Only   | None (Hard) |
-| FlexGen [22]         | Server / Cloud Node| 30B - 175B Params  | Batch Weight Stream| Co-resident Paged  | Thrashing   |
-| DeepSpeed-Offload [20| Server Node (HPC)  | 13B - 70B Params   | Static NVMe / Host | Co-resident Split  | Paging Lag  |
-| HuggingFace Acc. [19]| Edge / Workstation | 7B - 13B Params    | Virtual Host Swap  | Unified Paging     | TDR Crash   |
-| Standard Ollama [24] | Edge Workstation   | Single 7B Model    | Monolithic Load    | Sequential Naive   | Driver Race |
-| EdgeCascade (Ours)   | Consumer GPU (6GB) | 17.2B Aggregate    | Mutex Multiplexing | Orthogonal Paged   | Zero OOM    |
-+----------------------+--------------------+--------------------+--------------------+--------------------+-------------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE I<br><span class="table-subtitle">ARCHITECTURAL COMPARISON OF EDGE INFERENCE PARADIGMS</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 16%;">System Architecture</th>
+        <th style="width: 17%;">Target Hardware Memory Tier</th>
+        <th style="width: 18%;">Max Concurrent Parameter Capacity</th>
+        <th style="width: 18%;">Memory Allocation Strategy</th>
+        <th style="width: 16%;">Multi-Model Co-residency</th>
+        <th style="width: 15%;">OOM Safety Guarantee</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>vLLM [25]</strong></td>
+        <td>Server GPU (&ge;24 GB HBM)</td>
+        <td>Static VRAM Bound (Single Model)</td>
+        <td>PagedAttention (Block Paging)</td>
+        <td>Co-resident Only</td>
+        <td>None (Hard OOM Crash)</td>
+      </tr>
+      <tr>
+        <td><strong>FlexGen [22]</strong></td>
+        <td>Server / Cloud Node (DDR+NVMe)</td>
+        <td>30B &ndash; 175B Parameters</td>
+        <td>Batch Weight Streaming (LP-Scheduled)</td>
+        <td>Co-resident Paged</td>
+        <td>Severe Paging Thrashing</td>
+      </tr>
+      <tr>
+        <td><strong>DeepSpeed-Offload [20]</strong></td>
+        <td>Server HPC Cluster</td>
+        <td>13B &ndash; 70B Parameters</td>
+        <td>Static NVMe / Host RAM Offload</td>
+        <td>Co-resident Split</td>
+        <td>Paging Transfer Lag</td>
+      </tr>
+      <tr>
+        <td><strong>HuggingFace Accel. [19]</strong></td>
+        <td>Edge Workstation / Desktop</td>
+        <td>7B &ndash; 13B Parameters</td>
+        <td>Virtual Host Swap (WDDM Shared)</td>
+        <td>Unified Paging</td>
+        <td>Windows TDR Watchdog Reset</td>
+      </tr>
+      <tr>
+        <td><strong>Standard Ollama [24]</strong></td>
+        <td>Edge Workstation (Consumer)</td>
+        <td>Single 7B Model</td>
+        <td>Monolithic Daemon Process</td>
+        <td>Sequential Naive</td>
+        <td>Driver Race Rejection (80% Crash)</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>EdgeCascade (Ours)</strong></td>
+        <td><strong>Consumer GPU (Strictly 6 GB)</strong></td>
+        <td><strong>17.2B Aggregate Parameters</strong></td>
+        <td><strong>Mutex Memory Multiplexing</strong></td>
+        <td><strong>Orthogonal Paged</strong></td>
+        <td><strong>Deterministic 0.0% OOM Safety</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <h2 class="sec-heading">III. Theoretical Modeling & Memory Bounds</h2>
 <p>To establish a formal foundation for multi-model edge orchestration, we construct a rigorous analytical model of GPU memory allocation, process lifecycles, and driver reclamation dynamics.</p>
 <h3 class="subsec-heading">A. Mathematical Formulation of Transformer Memory Footprint</h3>
@@ -318,49 +479,66 @@
 <p>Setting <i>&tau;<sub><span>settle</span></sub> = 1.2<span> s</span></i> provides optimal empirical stability while preventing unnecessary pipeline idle latency.</p>
 <h2 class="sec-heading">IV. EdgeCascade System Architecture & Low-Level Mechanics</h2>
 <p>EdgeCascade replaces static daemon-based model co-residency with a dynamic, phase-aware process orchestration pipeline. The architecture is structured into three discrete execution tiers operating under the governance of a centralized mutex and memory pacing coordinator.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                                      FIGURE 1: EDGECASCADE ARCHITECTURE & DATAFLOW                                 |
-+--------------------------------------------------------------------------------------------------------------------+
-|                                                                                                                    |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|   |                                          USER PROMPT INGESTION & PIPELINE CONFIG                           |   |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|                                                         |                                                          |
-|                                                         v                                                          |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|   | STAGE 1: Fast Speculative Drafting Engine                                                                  |   |
-|   | Model: Google Gemma 3 4B-it (GGUF Q4_K_M) | Execution Target: GPU Dedicated (ngl=99)                      |   |
-|   | VRAM Footprint: 3,105.0 MiB               | Host RAM Footprint: Negligible (Weights fully on GPU)          |   |
-|   | Role: Rapid context hypothesis generation, logical structure drafting, and preliminary argument layout.   |   |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|                                                         |                                                          |
-|                                                         v                                                          |
-|                       [WDDM Teardown Protocol: Terminate PID -> tau_settle = 1.2s -> VRAM = 0.0 MiB]               |
-|                                                         |                                                          |
-|                                                         v                                                          |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|   | STAGE 2: Deterministic Structural Verification & Logical Audit Engine                                      |   |
-|   | Model: Google FLAN-T5 Large 770M (Seq2Seq)| Execution Target: Host CPU (ngl=0, 16 AVX-512 Threads)         |   |
-|   | VRAM Footprint: 0.0 MiB                   | Host RAM Footprint: 1,620.0 MiB                                |   |
-|   | Role: Factual correctness auditing, contradiction detection, citation validation, and constraint checking.  |   |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|                                                         |                                                          |
-|                                                         v                                                          |
-|                       [Intermediate Payload Assembly: Structured JSON Payload with Verification Critiques]        |
-|                                                         |                                                          |
-|                                                         v                                                          |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|   | STAGE 3: High-Capacity Syntactic Refinement & Humanization Engine                                          |   |
-|   | Model: Humanizer 12B (GGUF Q4_K_M)        | Execution Target: Hybrid GPU/CPU (ngl=20 GPU, 20 CPU Layers)   |   |
-|   | VRAM Footprint: 4,287.0 MiB (Peak)        | Host RAM Footprint: 4,850.0 MiB                                |   |
-|   | Role: Re-synthesis of verified content into natural, bursty, publication-grade academic discourse.         |   |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|                                                         |                                                          |
-|                                                         v                                                          |
-|   +------------------------------------------------------------------------------------------------------------+   |
-|   | FINAL DELIVERABLE: Publication-Grade IEEE Manuscript (Factual, Fluent, AI-Detector Evasive)                |   |
-|   +------------------------------------------------------------------------------------------------------------+   |
-+--------------------------------------------------------------------------------------------------------------------+</div>
+
+<div class="figure-wrapper wide-element">
+  <div class="figure-graphic-box">
+    <div style="display: flex; justify-content: space-between; align-items: stretch; gap: 8pt; margin: 6pt 0;">
+      
+      <!-- STAGE 1 -->
+      <div style="flex: 1; border: 1.2pt solid #1a365d; border-radius: 4pt; padding: 6pt; background: #ebf8ff; text-align: center;">
+        <div style="font-weight: bold; color: #2b6cb0; font-size: 8.5pt; text-transform: uppercase;">Stage 1: Speculative Drafting</div>
+        <div style="font-size: 8pt; font-weight: bold; margin: 3pt 0;">Gemma 3 4B-it (Q4_K_M)</div>
+        <div style="font-size: 7pt; color: #4a5568; line-height: 1.2;">
+          <strong>Target:</strong> Dedicated GPU (ngl=99)<br>
+          <strong>VRAM:</strong> 3,105.0 MiB (48.4% of 6GB)<br>
+          <strong>Throughput:</strong> 21.48 tok/s | Latency: 23.83s<br>
+          <strong>Function:</strong> Rapid hypothesis & draft layout
+        </div>
+      </div>
+
+      <!-- ARROW 1 -->
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 45pt;">
+        <div style="font-size: 6.5pt; font-weight: bold; color: #c53030; text-align: center; line-height: 1.1;">WDDM Flush<br>&tau;=1.2s</div>
+        <div style="font-size: 14pt; color: #4a5568;">&rarr;</div>
+        <div style="font-size: 6pt; color: #718096;">VRAM=0 MiB</div>
+      </div>
+
+      <!-- STAGE 2 -->
+      <div style="flex: 1; border: 1.2pt solid #22543d; border-radius: 4pt; padding: 6pt; background: #f0fff4; text-align: center;">
+        <div style="font-weight: bold; color: #2f855a; font-size: 8.5pt; text-transform: uppercase;">Stage 2: Deterministic Verification</div>
+        <div style="font-size: 8pt; font-weight: bold; margin: 3pt 0;">FLAN-T5 Large 770M (INT8)</div>
+        <div style="font-size: 7pt; color: #4a5568; line-height: 1.2;">
+          <strong>Target:</strong> Host CPU (16 AVX2 Threads)<br>
+          <strong>VRAM:</strong> 0.0 MiB (100% Isolated)<br>
+          <strong>Throughput:</strong> 6.38 tok/s | Latency: 80.17s<br>
+          <strong>Function:</strong> Factual audit, logic constraint check
+        </div>
+      </div>
+
+      <!-- ARROW 2 -->
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; width: 45pt;">
+        <div style="font-size: 6.5pt; font-weight: bold; color: #2b6cb0; text-align: center; line-height: 1.1;">Audit Critique<br>Payload</div>
+        <div style="font-size: 14pt; color: #4a5568;">&rarr;</div>
+        <div style="font-size: 6pt; color: #718096;">IPC Buffer</div>
+      </div>
+
+      <!-- STAGE 3 -->
+      <div style="flex: 1; border: 1.2pt solid #742a2a; border-radius: 4pt; padding: 6pt; background: #fff5f5; text-align: center;">
+        <div style="font-weight: bold; color: #c53030; font-size: 8.5pt; text-transform: uppercase;">Stage 3: Syntactic Refinement</div>
+        <div style="font-size: 8pt; font-weight: bold; margin: 3pt 0;">Humanizer 12B (Q4_K_M)</div>
+        <div style="font-size: 7pt; color: #4a5568; line-height: 1.2;">
+          <strong>Target:</strong> Hybrid (20 GPU / 20 CPU)<br>
+          <strong>Peak VRAM:</strong> 4,287.0 MiB (Cushion: 1,857 MiB)<br>
+          <strong>Throughput:</strong> 3.54 tok/s | Latency: 144.72s<br>
+          <strong>Function:</strong> High-burstiness stylistic rewrite
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <div class="figure-caption">Fig. 1. EdgeCascade system architecture and dynamic dataflow pipeline across heterogeneous execution tiers on a 6 GB consumer GPU.</div>
+</div>
+
 <h3 class="subsec-heading">A. Tri-Stage Heterogeneous Cascade Pipeline</h3>
 <p>The cognitive division of labor across EdgeCascade's three stages is customized to exploit the hardware strengths of heterogeneous compute units (GPU tensor cores vs. multi-core CPU SIMD vectors):</p>
 <p>1. *Stage 1 (Speculative Drafting)*: We instantiate Google Gemma 3 4B-it quantized at 4-bit block precision. Because the 4B parameter footprint fits comfortably within the 6 GB physical boundary (<i>3,105.0<span> MiB</span></i>), we assign an offload parameter of <i>ngl=99</i>. This forces all 36 transformer layers, attention heads, and positional embeddings to reside in dedicated GPU memory. Gemma 3 operates with high autoregressive throughput (<i>sim 21.5<span> tok/s</span></i>), synthesizing a comprehensive draft response from the user's initial prompt and contextual constraints.</p>
@@ -368,104 +546,168 @@
 <p>3. *Stage 3 (High-Capacity Syntactic Refinement)*: The final stage deploys a specialized 12-billion parameter humanization and discourse refinement model quantized at `Q4_K_M`. A 12B model under 4-bit precision occupies approximately 7.2 GB of static weight memory, which exceeds physical 6 GB VRAM. To resolve this, EdgeCascade implements asymmetric layer partitioning: exactly 20 transformer layers (<i>ngl=20</i>) are offloaded to the RTX 3050 Laptop GPU, consuming <i>4,287.0<span> MiB</span></i> of VRAM. The remaining 20 layers reside in host DDR4 memory. During inference, token embeddings and early layer activations are processed directly in GPU VRAM with full Tensor Core acceleration; intermediate activations are then streamed via PCIe 3.0 DMA to host CPU memory for the final layer projections. Stage 3 ingests the raw draft from Stage 1 along with the structural verification critique from Stage 2, performing an exhaustive linguistic rewrite that elevates syntactic variance, introduces sentence-length burstiness, and eliminates the stereotypical n-gram probability artifacts characteristic of machine-generated text.</p>
 <h3 class="subsec-heading">B. Mutex-Guarded Lifecycle Management & IPC Protocol</h3>
 <p>In monolithic serving frameworks, background processes maintain persistent memory handles. When multiple requests trigger different models, memory allocations overlap, causing instantaneous OOM crashes. EdgeCascade eliminates this vulnerability through an operating-system-level mutual exclusion lock (<i><i>X</i><sub><span>VRAM</span></sub></i>) combined with a disciplined child process lifecycle.</p>
-<div class="algorithm-box">+--------------------------------------------------------------------------------------------------------------------+
-| ALGORITHM 1: Mutex-Guarded Dynamic Memory-Multiplexed Inference Protocol                                           |
-+--------------------------------------------------------------------------------------------------------------------+
-|  1: Input: User Query Q, Pipeline Configuration C = {(m_1, ngl_1), (m_2, ngl_2), (m_3, ngl_3)}                    |
-|  2: Output: Final Publication-Grade Artifact A_final                                                              |
-|  3: Initialize Global Named Mutex X_VRAM <- AcquireMutexHandle("Global\\EdgeCascade_VRAM_Lock")                    |
-|  4: Initialize IPC Shared Memory Buffer S_shared <- AllocateSharedMemory(Capacity = 64 MiB)                       |
-|  5:                                                                                                                |
-|  6: // --- STAGE 1: SPECULATIVE DRAFTING ---                                                                       |
-|  7: WaitAndAcquire(X_VRAM)                                                                                         |
-|  8: Telemetry_Log("Stage 1 Pre-Allocation", QueryNVMLMemory())                                                     |
-|  9: PID_1 <- SpawnChildProcess("llama-cli", Model = m_1, Layers = ngl_1, Prompt = Q, Output = S_shared)            |
-| 10: WaitForProcessExit(PID_1, Timeout = 120.0s)                                                                    |
-| 11: Draft_Payload <- ReadSharedMemory(S_shared)                                                                    |
-| 12: Execute_Deterministic_Teardown(PID_1, tau_settle = 1.2s)                                                       |
-| 13: ReleaseMutex(X_VRAM)                                                                                           |
-| 14:                                                                                                                |
-| 15: // --- STAGE 2: CPU DETERMINISTIC VERIFICATION ---                                                             |
-| 16: // Pinned to CPU: Mutex X_VRAM is NOT required                                                                 |
-| 17: Telemetry_Log("Stage 2 CPU Execution", QueryNVMLMemory())                                                      |
-| 18: PID_2 <- SpawnChildProcess("flan-t5-engine", Model = m_2, Device = "CPU", Input = Draft_Payload)               |
-| 19: WaitForProcessExit(PID_2, Timeout = 180.0s)                                                                    |
-| 20: Verified_Payload <- ReadProcessOutput(PID_2)                                                                   |
-| 21: TerminateProcess(PID_2)                                                                                        |
-| 22:                                                                                                                |
-| 23: // --- STAGE 3: HYBRID SYNTACTIC REFINEMENT ---                                                                |
-| 24: WaitAndAcquire(X_VRAM)                                                                                         |
-| 25: Telemetry_Log("Stage 3 Pre-Allocation", QueryNVMLMemory())                                                     |
-| 26: Combined_Prompt <- AssembleRefinementPrompt(Draft_Payload, Verified_Payload)                                   |
-| 27: PID_3 <- SpawnChildProcess("llama-cli", Model = m_3, Layers = ngl_3, Prompt = Combined_Prompt)                 |
-| 28: WaitForProcessExit(PID_3, Timeout = 300.0s)                                                                    |
-| 29: A_final <- ReadProcessOutput(PID_3)                                                                            |
-| 30: Execute_Deterministic_Teardown(PID_3, tau_settle = 1.2s)                                                       |
-| 31: ReleaseMutex(X_VRAM)                                                                                           |
-| 32: Return A_final                                                                                                 |
-+--------------------------------------------------------------------------------------------------------------------+</div>
+
+<div class="algorithm-container">
+  <div class="algorithm-header"><strong>ALGORITHM 1:</strong> Mutex-Guarded Dynamic Memory-Multiplexed Inference Protocol</div>
+  <div class="algorithm-divider"></div>
+  <div class="algorithm-body">
+    <div class="alg-line"><span class="alg-num"> 1:</span> <strong>Input:</strong> User Query <span class="math-sym">Q</span>, Pipeline Parameters <span class="math-sym">C = {(m<sub>1</sub>, ngl<sub>1</sub>), (m<sub>2</sub>, ngl<sub>2</sub>), (m<sub>3</sub>, ngl<sub>3</sub>)}</span></div>
+    <div class="alg-line"><span class="alg-num"> 2:</span> <strong>Output:</strong> Final Publication-Grade Manuscript Artifact <span class="math-sym">A<sub>final</sub></span></div>
+    <div class="alg-line"><span class="alg-num"> 3:</span> <strong>Initialize:</strong> Global Named Mutex <span class="math-sym">X<sub>VRAM</sub> &larr; AcquireMutex("Global\EdgeCascade_VRAM_Lock")</span></div>
+    <div class="alg-line"><span class="alg-num"> 4:</span> <strong>Initialize:</strong> IPC Shared Memory Segment <span class="math-sym">S<sub>shared</sub> &larr; CreateSharedMemory(64 MiB)</span></div>
+    <div class="alg-line"><span class="alg-num"> 5:</span> </div>
+    <div class="alg-line"><span class="alg-num"> 6:</span> <span class="alg-comment">// --- STAGE 1: SPECULATIVE DRAFT GENERATION ---</span></div>
+    <div class="alg-line"><span class="alg-num"> 7:</span> <strong>WaitAndAcquire</strong>(<span class="math-sym">X<sub>VRAM</sub></span>); <strong>LogTelemetry</strong>("Stage 1 Entry", NVML_Query())</div>
+    <div class="alg-line"><span class="alg-num"> 8:</span> <span class="math-sym">PID<sub>1</sub> &larr;</span> <strong>SpawnChildProcess</strong>("llama-cli", model=<span class="math-sym">m<sub>1</sub></span>, layers=<span class="math-sym">ngl<sub>1</sub></span>, prompt=<span class="math-sym">Q</span>)</div>
+    <div class="alg-line"><span class="alg-num"> 9:</span> <strong>WaitForExit</strong>(<span class="math-sym">PID<sub>1</sub></span>); <span class="math-sym">P<sub>draft</sub> &larr;</span> <strong>ReadMemory</strong>(<span class="math-sym">S<sub>shared</sub></span>)</div>
+    <div class="alg-line"><span class="alg-num">10:</span> <strong>Execute_Deterministic_Teardown</strong>(<span class="math-sym">PID<sub>1</sub></span>, <span class="math-sym">&tau;<sub>settle</sub> = 1.2s</span>)</div>
+    <div class="alg-line"><span class="alg-num">11:</span> <strong>ReleaseMutex</strong>(<span class="math-sym">X<sub>VRAM</sub></span>)</div>
+    <div class="alg-line"><span class="alg-num">12:</span> </div>
+    <div class="alg-line"><span class="alg-num">13:</span> <span class="alg-comment">// --- STAGE 2: CPU DETERMINISTIC VERIFICATION & AUDIT ---</span></div>
+    <div class="alg-line"><span class="alg-num">14:</span> <span class="alg-comment">// Pinned exclusively to Host CPU: GPU VRAM remains 0.0 MiB</span></div>
+    <div class="alg-line"><span class="alg-num">15:</span> <span class="math-sym">PID<sub>2</sub> &larr;</span> <strong>SpawnProcess</strong>("flan-t5-engine", device="CPU", threads=16, input=<span class="math-sym">P<sub>draft</sub></span>)</div>
+    <div class="alg-line"><span class="alg-num">16:</span> <strong>WaitForExit</strong>(<span class="math-sym">PID<sub>2</sub></span>); <span class="math-sym">P<sub>audit</sub> &larr;</span> <strong>ReadOutput</strong>(<span class="math-sym">PID<sub>2</sub></span>); <strong>Terminate</strong>(<span class="math-sym">PID<sub>2</sub></span>)</div>
+    <div class="alg-line"><span class="alg-num">17:</span> </div>
+    <div class="alg-line"><span class="alg-num">18:</span> <span class="alg-comment">// --- STAGE 3: HYBRID SYNTACTIC REFINEMENT & HUMANIZATION ---</span></div>
+    <div class="alg-line"><span class="alg-num">19:</span> <strong>WaitAndAcquire</strong>(<span class="math-sym">X<sub>VRAM</sub></span>); <strong>LogTelemetry</strong>("Stage 3 Entry", NVML_Query())</div>
+    <div class="alg-line"><span class="alg-num">20:</span> <span class="math-sym">P<sub>combined</sub> &larr;</span> <strong>SynthesizePrompt</strong>(<span class="math-sym">P<sub>draft</sub></span>, <span class="math-sym">P<sub>audit</sub></span>)</div>
+    <div class="alg-line"><span class="alg-num">21:</span> <span class="math-sym">PID<sub>3</sub> &larr;</span> <strong>SpawnProcess</strong>("llama-cli", model=<span class="math-sym">m<sub>3</sub></span>, layers=<span class="math-sym">ngl<sub>3</sub></span>, prompt=<span class="math-sym">P<sub>combined</sub></span>)</div>
+    <div class="alg-line"><span class="alg-num">22:</span> <strong>WaitForExit</strong>(<span class="math-sym">PID<sub>3</sub></span>); <span class="math-sym">A<sub>final</sub> &larr;</span> <strong>ReadOutput</strong>(<span class="math-sym">PID<sub>3</sub></span>)</div>
+    <div class="alg-line"><span class="alg-num">23:</span> <strong>Execute_Deterministic_Teardown</strong>(<span class="math-sym">PID<sub>3</sub></span>, <span class="math-sym">&tau;<sub>settle</sub> = 1.2s</span>)</div>
+    <div class="alg-line"><span class="alg-num">24:</span> <strong>ReleaseMutex</strong>(<span class="math-sym">X<sub>VRAM</sub></span>)</div>
+    <div class="alg-line"><span class="alg-num">25:</span> <strong>Return</strong> <span class="math-sym">A<sub>final</sub></span></div>
+  </div>
+  <div class="algorithm-footer"></div>
+</div>
+
 <h3 class="subsec-heading">C. Deterministic WDDM Paging & Driver Cleanup Engine</h3>
 <p>Under Microsoft Windows, terminating a process handle via `TerminateProcess()` or standard Python process closure does not guarantee immediate physical VRAM reclamation. The WDDM kernel driver (`dxgkrnl.sys`) performs deferred cleanup: memory pages allocated by the terminated process are placed on a deferred free list and unmapped asynchronously across several scheduling ticks. If a subsequent process immediately requests a large GPU allocation while pages are still queued on the deferred free list, the driver's memory budgeter registers an oversubscription condition, precipitating catastrophic page migration or outright allocation rejection.</p>
 <p>EdgeCascade implements a proactive driver synchronization protocol, formalized in Algorithm 2. Following process termination, the coordinator interrogates the hardware counters via NVML (NVIDIA Management Library). The coordinator enforces an empirical settling window <i>&tau;<sub><span>settle</span></sub> = 1.2<span> s</span></i>, continuously polling the physical dedicated memory counter until resident allocation returns to the baseline resting state (<i>V<sub><span>residual</span></sub> = 0.0<span> MiB</span></i>). This deterministic flush guarantees that every subsequent pipeline stage encounters an unfragmented, fully reclaimed 6,144 MiB physical memory space.</p>
-<div class="algorithm-box">+--------------------------------------------------------------------------------------------------------------------+
-| ALGORITHM 2: Deterministic WDDM Paging & Driver Cleanup Engine                                                     |
-+--------------------------------------------------------------------------------------------------------------------+
-|  1: Input: Process ID PID, Target Idle VRAM V_idle_target = 0.0 MiB, Settling Window tau_settle = 1.2s             |
-|  2: Output: Boolean Success_Status                                                                                 |
-|  3: Function Execute_Deterministic_Teardown(PID, tau_settle):                                                      |
-|  4:    hProcess <- OpenProcess(PROCESS_TERMINATE | SYNCHRONIZE, FALSE, PID)                                        |
-|  5:    If hProcess != NULL Then:                                                                                   |
-|  6:       TerminateProcess(hProcess, 0)                                                                            |
-|  7:       WaitForSingleObject(hProcess, INFINITE)                                                                  |
-|  8:       CloseHandle(hProcess)                                                                                    |
-|  9:    End If                                                                                                      |
-| 10:    t_start <- GetSystemTimePrecise()                                                                           |
-| 11:    While (GetSystemTimePrecise() - t_start) < tau_settle Do:                                                   |
-| 12:       Current_VRAM <- NVML_QueryDeviceMemory(DeviceIndex = 0).used                                            |
-| 13:       If Current_VRAM <= V_idle_target Then:                                                                   |
-| 14:          Break // Memory successfully unmapped by WDDM driver                                                  |
-| 15:       End If                                                                                                   |
-| 16:       Sleep(50 Milliseconds) // Yield CPU scheduling quantum                                                   |
-| 17:    End While                                                                                                   |
-| 18:    Final_VRAM <- NVML_QueryDeviceMemory(DeviceIndex = 0).used                                                  |
-| 19:    If Final_VRAM > V_idle_target Then:                                                                         |
-| 20:       InvokeWin32API_EmptyWorkingSet(GetCurrentProcess())                                                      |
-| 21:       Sleep(200 Milliseconds) // Enforce hard settling barrier                                                 |
-| 22:    End If                                                                                                      |
-| 23:    Return (NVML_QueryDeviceMemory(DeviceIndex = 0).used <= V_idle_target)                                       |
-+--------------------------------------------------------------------------------------------------------------------+</div>
+
+<div class="algorithm-container">
+  <div class="algorithm-header"><strong>ALGORITHM 2:</strong> Deterministic WDDM Paging & Driver Cleanup Engine</div>
+  <div class="algorithm-divider"></div>
+  <div class="algorithm-body">
+    <div class="alg-line"><span class="alg-num"> 1:</span> <strong>Function</strong> <strong>Execute_Deterministic_Teardown</strong>(<span class="math-sym">PID</span>, <span class="math-sym">&tau;<sub>settle</sub> = 1.2s</span>):</div>
+    <div class="alg-line"><span class="alg-num"> 2:</span> &nbsp;&nbsp;&nbsp;&nbsp;<span class="math-sym">hProc &larr; OpenProcess(PROCESS_TERMINATE | SYNCHRONIZE, FALSE, PID)</span></div>
+    <div class="alg-line"><span class="alg-num"> 3:</span> &nbsp;&nbsp;&nbsp;&nbsp;<strong>If</strong> <span class="math-sym">hProc &ne; NULL</span> <strong>Then</strong>:</div>
+    <div class="alg-line"><span class="alg-num"> 4:</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>TerminateProcess</strong>(<span class="math-sym">hProc, 0</span>); <strong>WaitForSingleObject</strong>(<span class="math-sym">hProc, INFINITE</span>); <strong>CloseHandle</strong>(<span class="math-sym">hProc</span>)</div>
+    <div class="alg-line"><span class="alg-num"> 5:</span> &nbsp;&nbsp;&nbsp;&nbsp;<strong>End If</strong></div>
+    <div class="alg-line"><span class="alg-num"> 6:</span> &nbsp;&nbsp;&nbsp;&nbsp;<span class="math-sym">t<sub>start</sub> &larr; GetHighPrecisionTimestamp()</span></div>
+    <div class="alg-line"><span class="alg-num"> 7:</span> &nbsp;&nbsp;&nbsp;&nbsp;<strong>While</strong> (<span class="math-sym">GetHighPrecisionTimestamp() - t<sub>start</sub></span>) &lt; <span class="math-sym">&tau;<sub>settle</sub></span> <strong>Do</strong>:</div>
+    <div class="alg-line"><span class="alg-num"> 8:</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="math-sym">V<sub>used</sub> &larr; NVML_QueryMemory(DeviceIndex=0).used</span></div>
+    <div class="alg-line"><span class="alg-num"> 9:</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>If</strong> <span class="math-sym">V<sub>used</sub> &le; 0.0 MiB</span> <strong>Then Break</strong> <span class="alg-comment">// WDDM unmapping queue drained</span></div>
+    <div class="alg-line"><span class="alg-num">10:</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Sleep</strong>(50 Milliseconds) <span class="alg-comment">// Yield CPU execution quantum</span></div>
+    <div class="alg-line"><span class="alg-num">11:</span> &nbsp;&nbsp;&nbsp;&nbsp;<strong>End While</strong></div>
+    <div class="alg-line"><span class="alg-num">12:</span> &nbsp;&nbsp;&nbsp;&nbsp;<strong>If</strong> <span class="math-sym">NVML_QueryMemory(DeviceIndex=0).used &gt; 0.0 MiB</span> <strong>Then</strong>:</div>
+    <div class="alg-line"><span class="alg-num">13:</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>Win32_EmptyWorkingSet</strong>(GetCurrentProcess()); <strong>Sleep</strong>(200 Milliseconds)</div>
+    <div class="alg-line"><span class="alg-num">14:</span> &nbsp;&nbsp;&nbsp;&nbsp;<strong>End If</strong></div>
+    <div class="alg-line"><span class="alg-num">15:</span> &nbsp;&nbsp;&nbsp;&nbsp;<strong>Return</strong> (<span class="math-sym">NVML_QueryMemory(DeviceIndex=0).used &le; 0.0 MiB</span>)</div>
+  </div>
+  <div class="algorithm-footer"></div>
+</div>
+
 <h2 class="sec-heading">V. Experimental Methodology & Hardware Testbed</h2>
 <p>To rigorously evaluate EdgeCascade under realistic operating constraints, we deployed the framework on a physical commodity mobile workstation configured with an NVIDIA GeForce RTX 3050 Laptop GPU. The complete hardware, driver, and software environment is cataloged in Table II.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE II: EXPERIMENTAL WORKSTATION HARDWARE & SOFTWARE SPECIFICATIONS                |
-+------------------------------+-------------------------------------------------------------------------------------+
-| Component / Subsystem        | Hardware & Operating Configuration Specifications                                  |
-+------------------------------+-------------------------------------------------------------------------------------+
-| Host Processor (CPU)         | AMD Ryzen 7 5800H (8 Physical Cores, 16 Execution Threads @ 3.20 GHz, Boost 4.4 GHz)|
-| Host System Memory (RAM)     | 16,384 MiB (16 GB) DDR4 Dual-Channel @ 3200 MT/s (Peak Bandwidth: 51.2 GB/s)        |
-| Dedicated Graphics (GPU)     | NVIDIA GeForce RTX 3050 Laptop GPU (GA107 Silicon, 2,048 CUDA Cores, 64 Tensor C.) |
-| Physical Video Memory (VRAM) | 6,144 MiB (6 GB) GDDR6, 96-bit Memory Interface (Peak Bandwidth: 168.0 GB/s)       |
-| Interconnect Bus Interface   | PCI Express 3.0 x4 (Theoretical Bidirectional Bandwidth: 3.94 GB/s)                 |
-| Operating System & Kernel    | Microsoft Windows 11 Home 64-bit (Build 22631.4317)                                |
-| Graphics Driver Subsystem    | Windows Display Driver Model (WDDM 3.1), NVIDIA Game Ready Driver 551.86            |
-| Deep Learning Runtimes       | llama.cpp CUDA Runtime (Build b2840, CUDA 12.4, cuBLAS), PyTorch 2.4.0+cpu, HF Trans.|
-| Telemetry & Monitoring Tools | NVIDIA Management Library (NVML v12), nvidia-smi 100ms continuous sampling daemon  |
-+------------------------------+-------------------------------------------------------------------------------------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE II<br><span class="table-subtitle">EXPERIMENTAL WORKSTATION HARDWARE & SOFTWARE SPECIFICATIONS</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Component / Subsystem</th>
+        <th style="width: 75%;">Hardware & Operating Configuration Specifications</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Host Processor (CPU)</strong></td>
+        <td>AMD Ryzen 7 5800H (8 Physical Cores, 16 Execution Threads @ 3.20 GHz Base, Boost up to 4.40 GHz, 16 MB L3 Cache)</td>
+      </tr>
+      <tr>
+        <td><strong>Host System Memory (RAM)</strong></td>
+        <td>16,384 MiB (16 GB) DDR4 Dual-Channel @ 3200 MT/s (Peak Physical Bandwidth: 51.2 GB/s)</td>
+      </tr>
+      <tr>
+        <td><strong>Dedicated Graphics (GPU)</strong></td>
+        <td>NVIDIA GeForce RTX 3050 Laptop GPU (GA107 Silicon, 2,048 CUDA Cores, 64 Tensor Cores, 35W&ndash;60W Configurable TDP)</td>
+      </tr>
+      <tr>
+        <td><strong>Physical Video Memory (VRAM)</strong></td>
+        <td><strong>6,144 MiB (6 GB) GDDR6</strong>, 96-bit Memory Bus Interface (Peak Theoretical Bandwidth: 168.0 GB/s)</td>
+      </tr>
+      <tr>
+        <td><strong>System Interconnect Interface</strong></td>
+        <td>PCI Express 3.0 x4 (Theoretical Bidirectional Bus Bandwidth: 3.94 GB/s)</td>
+      </tr>
+      <tr>
+        <td><strong>Operating System & Kernel</strong></td>
+        <td>Microsoft Windows 11 Home 64-bit (Build 22631.4317)</td>
+      </tr>
+      <tr>
+        <td><strong>Graphics Driver Subsystem</strong></td>
+        <td>Windows Display Driver Model (WDDM 3.1), NVIDIA Game Ready Driver Release 551.86</td>
+      </tr>
+      <tr>
+        <td><strong>Deep Learning Runtime Engines</strong></td>
+        <td>llama.cpp CUDA Runtime (Build b2840, CUDA 12.4, cuBLAS), PyTorch 2.4.0+cpu, HuggingFace Transformers 4.44</td>
+      </tr>
+      <tr>
+        <td><strong>Telemetry & Profiling Instrumentation</strong></td>
+        <td>NVIDIA Management Library (NVML v12), nvidia-smi 100ms Continuous Background Sampling Daemon</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <h3 class="subsec-heading">A. Evaluated Model Stack & Quantization Profiles</h3>
 <p>The evaluated compound AI ensemble comprises three heterogeneous foundation models spanning diverse parameter scales, attention mechanisms, and architectural designs, detailed in Table III.</p>
 <p>- **Stage 1 (Gemma 3 4B-it)**: An autoregressive decoder-only transformer developed by Google DeepMind [15]. It incorporates 36 layers, a hidden dimension of 2,560, and 8 query-key-value attention heads with rotary position embeddings (RoPE). The model is quantized to GGUF `Q4_K_M` format (static weight size: 2,490 MiB).</p>
 <p>- **Stage 2 (FLAN-T5 Large)**: A sequence-to-sequence encoder-decoder model comprising 24 encoder layers and 24 decoder layers with relative position representations [16]. Quantized to 8-bit integer precision via PyTorch dynamic quantization, it occupies 1,620 MiB of system memory and runs entirely on the host CPU.</p>
 <p>- **Stage 3 (Humanizer 12B)**: A 12-billion parameter autoregressive language model fine-tuned specifically for syntactic de-biasing, lexical diversification, and cadence alignment [17]. Quantized under GGUF `Q4_K_M` (static weight size: 7,320 MiB), it represents the primary memory challenge on a 6 GB card.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE III: HETEROGENEOUS MODEL STACK & ALLOCATION PARAMETERS                         |
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+
-| Pipeline Phase       | Model Architecture | Parameter Volume   | Quantization Type  | Runtime Execution  | Active  |
-|                      | & Base Checkpoint  | & Component Layers | & File Size        | Target & Threading | Layers  |
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+
-| Stage 1: Drafting    | Gemma 3 4B-it [15] | 4.22 Billion (36L) | GGUF Q4_K_M (2.4GB)| Dedicated GPU      | ngl=99  |
-| Stage 2: Verification| FLAN-T5 Large [16] | 770 Million (48L)  | PyTorch INT8(1.6GB)| Host CPU (16 Thr.) | ngl=0   |
-| Stage 3: Refinement  | Humanizer 12B [17] | 12.18 Billion (40L)| GGUF Q4_K_M (7.3GB)| Hybrid (GPU + CPU) | ngl=20  |
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE III<br><span class="table-subtitle">HETEROGENEOUS MODEL STACK & ALLOCATION PARAMETERS</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 15%;">Pipeline Phase</th>
+        <th style="width: 18%;">Model Architecture & Checkpoint</th>
+        <th style="width: 17%;">Parameter Volume & Layers</th>
+        <th style="width: 18%;">Quantization Type & Size</th>
+        <th style="width: 20%;">Runtime Target & Threading</th>
+        <th style="width: 12%;">Layer Offload</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Stage 1: Drafting</strong></td>
+        <td>Google Gemma 3 4B-it [15]</td>
+        <td>4.22 Billion Parameters (36 Layers)</td>
+        <td>GGUF Q4_K_M (2,490 MiB)</td>
+        <td>Dedicated GPU (CUDA cuBLAS)</td>
+        <td>ngl = 99 (All GPU)</td>
+      </tr>
+      <tr>
+        <td><strong>Stage 2: Verification</strong></td>
+        <td>Google FLAN-T5 Large [16]</td>
+        <td>770 Million Parameters (48 Layers)</td>
+        <td>PyTorch Dynamic INT8 (1,620 MiB)</td>
+        <td>Host CPU (16 AVX2 Threads)</td>
+        <td>ngl = 0 (All CPU)</td>
+      </tr>
+      <tr>
+        <td><strong>Stage 3: Refinement</strong></td>
+        <td>Humanizer 12B [17]</td>
+        <td>12.18 Billion Parameters (40 Layers)</td>
+        <td>GGUF Q4_K_M (7,320 MiB)</td>
+        <td>Hybrid Partitioned (GPU + CPU)</td>
+        <td>ngl = 20 (Balanced)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <h3 class="subsec-heading">B. Workload Benchmarking Protocol & Telemetry Instrumentation</h3>
 <p>To evaluate performance across varying operational scales, we established three standardized evaluation workloads:</p>
 <p>1. *Short Generation Workload*: 64 input prompt tokens, generating 128 output tokens (<i>N<sub><span>ctx</span></sub> = 192</i>). Representative of conversational queries and brief summaries.</p>
@@ -480,18 +722,65 @@
 <p>- `cpu_util`: Host AMD Ryzen 7 5800H processor utilization across all 16 execution threads.</p>
 <h2 class="sec-heading">VI. Empirical Results & Micro-Architectural Analysis</h2>
 <p>We present the empirical results collected across 10 independent repetitions of the end-to-end EdgeCascade pipeline on our physical testbed. We evaluate memory containment, execution latency, and comparative stability against existing serving frameworks.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE IV: COMPARATIVE BENCHMARK ACROSS SERVING FRAMEWORKS ON 6 GB GPU                |
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+
-| Framework Candidate  | Peak VRAM Footprint| Inter-Stage Valley | Total Latency      | Paging Thrashing   | OOM Run |
-|                      | (Physical MiB)     | VRAM (Residual)    | (Seconds, N=512)   | Degradation Factor | Failure |
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+
-| HuggingFace Accel.[19| 6,144.0 MiB (Cap)  | Undefined (Crash)  | Failed (OOM)       | Infinite (Crash)   | 100.0%  |
-| FlexGen (b=1) [22]   | 5,980.0 MiB        | 3,850.0 MiB (Res.) | 1,284.10s ± 112.4s | 7.4x Memory Wall   | 0.0%    |
-| Ollama Default [24]  | 6,144.0 MiB (Cap)  | 2,490.0 MiB (Leak) | Failed (TDR Reset) | High Driver Paging | 80.0%   |
-| Naive Sequential     | 5,890.0 MiB        | 1,420.0 MiB (Lag)  | 482.19s ± 84.12s   | 2.1x Swap Penalty  | 30.0%   |
-| EdgeCascade (Ours)   | 4,287.0 MiB        | 0.0 MiB (Flushed)  | 254.35s ± 55.84s   | 1.0x (Zero Paging) | 0.0%    |
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE IV<br><span class="table-subtitle">COMPARATIVE BENCHMARK ACROSS SERVING FRAMEWORKS ON 6 GB CONSUMER GPU</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Framework Candidate</th>
+        <th style="width: 18%;">Peak VRAM Footprint</th>
+        <th style="width: 18%;">Inter-Stage Valley VRAM</th>
+        <th style="width: 16%;">Total Latency (N=512)</th>
+        <th style="width: 18%;">Paging Thrashing Factor</th>
+        <th style="width: 12%;">OOM Failure Rate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>HuggingFace Accelerate [19]</strong></td>
+        <td>6,144.0 MiB (Physical Cap)</td>
+        <td>Undefined (Fatal Crash)</td>
+        <td>Failed (OOM Rejection)</td>
+        <td>Infinite (Kernel Abort)</td>
+        <td>100.0% (Crash)</td>
+      </tr>
+      <tr>
+        <td><strong>FlexGen (Batch Size b=1) [22]</strong></td>
+        <td>5,980.0 MiB</td>
+        <td>3,850.0 MiB (Residual)</td>
+        <td>1,284.10s &plusmn; 112.4s</td>
+        <td>7.4&times; PCIe Bus Bottleneck</td>
+        <td>0.0% (Thrashing)</td>
+      </tr>
+      <tr>
+        <td><strong>Ollama Default Runtime [24]</strong></td>
+        <td>6,144.0 MiB (Physical Cap)</td>
+        <td>2,490.0 MiB (Driver Leak)</td>
+        <td>Failed (TDR Watchdog)</td>
+        <td>Severe WDDM Swap Storm</td>
+        <td>80.0% (Failure)</td>
+      </tr>
+      <tr>
+        <td><strong>Naive Sequential Execution</strong></td>
+        <td>5,890.0 MiB</td>
+        <td>1,420.0 MiB (Reclaim Lag)</td>
+        <td>482.19s &plusmn; 84.12s</td>
+        <td>2.1&times; Virtual Memory Swap</td>
+        <td>30.0% (Instability)</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>EdgeCascade (Ours)</strong></td>
+        <td><strong>4,287.0 MiB (30.2% Cushion)</strong></td>
+        <td><strong>0.0 MiB (Fully Flushed)</strong></td>
+        <td><strong>254.35s &plusmn; 55.84s</strong></td>
+        <td><strong>1.0&times; (Zero Paging Penalty)</strong></td>
+        <td><strong>0.0% (Zero OOM)</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <h3 class="subsec-heading">A. Memory Footprint & Physical Safety Cushion</h3>
 <p>The empirical telemetry logged during end-to-end execution validates the theoretical memory bounds formulated in Section III. As cataloged in Table IV:</p>
 <p>1. *Strict Peak Containment*: The absolute maximum physical video memory allocated across the entire 17.2B parameter pipeline reached <i>V<sub><span>peak</span></sub> = 4,287.0<span> MiB</span></i> during Stage 3 hybrid inference (<i>ngl=20</i>). Compared to the hardware capacity of 6,144.0 MiB, EdgeCascade maintains an unallocated physical safety cushion of:</p>
@@ -501,42 +790,135 @@
 <div class="equation-box"><span class="eq-content">V<sub><span>valley</span></sub> = 0.0<span> MiB</span></span></div>
 <p>This confirms that the asynchronous WDDM deferred unmapping queue is completely purged before Stage 3 requests GPU allocation, eliminating the driver accumulation and fragmentation that plagued baseline frameworks.</p>
 <p>3. *Absolute Zero-Crash Reliability*: Across all 10 independent benchmark runs across Short, Medium, and Standard workloads, EdgeCascade recorded exactly zero OOM failures (<i>0.0\%</i> failure rate), zero Windows TDR resets, and zero memory corruption events. In contrast, HuggingFace Accelerate crashed with fatal CUDA OOM on every attempt to load the 12B model, and Ollama crashed in 80% of runs due to driver race conditions between successive sequential models.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                         FIGURE 3: EMPIRICAL TELEMETRY VRAM TIME-SERIES CURVE ACROSS STAGES                         |
-+--------------------------------------------------------------------------------------------------------------------+
-|  VRAM (MiB)                                                                                                        |
-|   6144 | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - [Hardware Physical Cap: 6144 MiB]  |
-|        |                                                                                                           |
-|   5000 |                                                 +-----------------------+                                 |
-|        |                                                 | STAGE 3: Humanizer 12B|                                 |
-|   4287 | - - - - - - - - - - - - - - - - - - - - - - - - | Peak: 4,287.0 MiB     | - - - [30.2% Safety Headroom]   |
-|        |                                                 | (Hybrid: ngl=20)      |                                 |
-|   3105 | +-----------------------+                       |                       |                                 |
-|        | | STAGE 1: Gemma 3 4B   |                       |                       |                                 |
-|   2000 | | Peak: 3,105.0 MiB     |                       |                       |                                 |
-|        | | (Dedicated: ngl=99)   |                       |                       |                                 |
-|   1000 | |                       |                       |                       |                                 |
-|        | |                       | [STAGE 2: FLAN-T5]    |                       |                                 |
-|      0 +-+-----------------------+-----------------------+-----------------------+--------------------> Time (sec) |
-|          0s                     24s                     104s                    249s                  254s         |
-|             [WDDM Teardown: 1.2s]   [Pinned CPU: 0 MiB]   [WDDM Teardown: 1.2s]   [Flushed: 0 MiB]                 |
-+--------------------------------------------------------------------------------------------------------------------+</div>
+
+<div class="figure-wrapper wide-element">
+  <div class="figure-graphic-box" style="padding: 10pt; text-align: center;">
+    <svg viewBox="0 0 700 180" style="width: 100%; max-height: 160pt; font-family: 'Times New Roman', serif;">
+      <!-- Grid & Limits -->
+      <line x1="50" y1="20" x2="680" y2="20" stroke="#e53e3e" stroke-width="1.5" stroke-dasharray="4,4"/>
+      <text x="55" y="15" fill="#e53e3e" font-size="9" font-weight="bold">Physical Hardware Limit: 6,144.0 MiB (NVIDIA RTX 3050 Laptop GPU)</text>
+      
+      <line x1="50" y1="65" x2="680" y2="65" stroke="#3182ce" stroke-width="1.2" stroke-dasharray="3,3"/>
+      <text x="440" y="60" fill="#2b6cb0" font-size="8.5" font-weight="bold">Stage 3 Peak: 4,287.0 MiB (1,857.0 MiB Safety Headroom / 30.2%)</text>
+      
+      <line x1="50" y1="95" x2="680" y2="95" stroke="#718096" stroke-width="0.8" stroke-dasharray="2,2"/>
+      <text x="80" y="90" fill="#4a5568" font-size="8">Stage 1 Peak: 3,105.0 MiB</text>
+      
+      <!-- Axes -->
+      <line x1="50" y1="150" x2="680" y2="150" stroke="#000" stroke-width="1.2"/>
+      <line x1="50" y1="15" x2="50" y2="150" stroke="#000" stroke-width="1.2"/>
+      <text x="15" y="25" font-size="8" font-weight="bold">VRAM (MiB)</text>
+      <text x="590" y="165" font-size="8" font-weight="bold">Execution Time (Seconds)</text>
+      
+      <!-- Axis Labels -->
+      <text x="25" y="23" font-size="7">6144</text>
+      <text x="25" y="68" font-size="7">4287</text>
+      <text x="25" y="98" font-size="7">3105</text>
+      <text x="35" y="153" font-size="7">0</text>
+      
+      <!-- Stage 1 Wave -->
+      <path d="M 50 150 L 70 95 L 140 95 L 145 150" fill="rgba(66, 153, 225, 0.2)" stroke="#2b6cb0" stroke-width="2"/>
+      <text x="80" y="125" fill="#2b6cb0" font-size="8" font-weight="bold">Stage 1: Gemma 3 4B</text>
+      <text x="85" y="137" fill="#4a5568" font-size="7">ngl=99 (GPU VRAM)</text>
+      
+      <!-- WDDM Teardown 1 -->
+      <rect x="145" y="148" width="10" height="4" fill="#e53e3e"/>
+      
+      <!-- Stage 2 Flat (CPU) -->
+      <line x1="155" y1="150" x2="330" y2="150" stroke="#38a169" stroke-width="3"/>
+      <text x="175" y="140" fill="#276749" font-size="8" font-weight="bold">Stage 2: FLAN-T5 Large (Host CPU Pinned)</text>
+      <text x="210" y="165" fill="#2f855a" font-size="7">VRAM Footprint: Exactly 0.0 MiB</text>
+      
+      <!-- Stage 3 Wave -->
+      <path d="M 330 150 L 360 65 L 630 65 L 635 150" fill="rgba(229, 62, 62, 0.2)" stroke="#c53030" stroke-width="2"/>
+      <text x="440" y="105" fill="#9b2c2c" font-size="8.5" font-weight="bold">Stage 3: Humanizer 12B</text>
+      <text x="430" y="118" fill="#4a5568" font-size="7.5">Hybrid: ngl=20 (Peak: 4,287.0 MiB)</text>
+      
+      <!-- WDDM Teardown 2 -->
+      <line x1="635" y1="150" x2="680" y2="150" stroke="#000" stroke-width="1.5"/>
+      <text x="635" y="140" fill="#718096" font-size="7">Flushed (0 MiB)</text>
+    </svg>
+  </div>
+  <div class="figure-caption">Fig. 2. Empirical NVML telemetry time-series curve showing dynamic memory multiplexing across generation stages on a 6 GB consumer GPU.</div>
+</div>
+
 <h3 class="subsec-heading">B. Latency and Process Swapping Overhead</h3>
 <p>The end-to-end execution latency across the standard 512-token workload averaged <i>254.35<span> s</span></i> with a standard deviation of <i>55.84<span> s</span></i> across 10 trials, establishing a 95% confidence interval of <i>[219.7<span> s</span>, 289.0<span> s</span>]</i>. Table V provides an exhaustive breakdown of execution time across individual stages and architectural sub-operations.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE V: EXECUTION LATENCY BREAKDOWN ACROSS CASCADE SUB-OPERATIONS                   |
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+
-| Pipeline Component   | Active Execution   | Mean Latency       | Percentage of      | Generation Speed   | Primary |
-| & Sub-Operation      | Hardware Device    | (Seconds, N=512)   | Total Pipeline     | (Tokens / Sec)     | Bottlen.|
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+
-| Stage 1: Gemma 3 4B  | Dedicated GPU VRAM | 23.83s ± 3.42s     | 9.4%               | 21.48 tok/s        | Compute |
-| Stage 1 Teardown     | OS WDDM Kernel     | 1.34s ± 0.12s      | 0.5%               | N/A (Driver Sync)  | Driver  |
-| Stage 2: FLAN-T5 L.  | Host CPU (16 Thr.) | 80.17s ± 11.20s    | 31.5%              | 6.38 tok/s         | CPU SIMD|
-| Stage 3 Init & Load  | PCIe 3.0 DMA / RAM | 3.95s ± 0.41s      | 1.6%               | N/A (Weight Map)   | PCIe Bus|
-| Stage 3: Humanizer   | Hybrid (GPU + CPU) | 144.72s ± 40.21s   | 56.9%              | 3.54 tok/s         | RAM Band|
-| Stage 3 Teardown     | OS WDDM Kernel     | 0.34s ± 0.05s      | 0.1%               | N/A (Driver Sync)  | Driver  |
-| Total End-to-End     | Full Architecture  | 254.35s ± 55.84s   | 100.0%             | 2.01 tok/s (Agg.)  | Hybrid  |
-+----------------------+--------------------+--------------------+--------------------+--------------------+---------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE V<br><span class="table-subtitle">EXECUTION LATENCY BREAKDOWN ACROSS CASCADE SUB-OPERATIONS (N=512 TOKENS)</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 20%;">Pipeline Component & Operation</th>
+        <th style="width: 18%;">Active Execution Target</th>
+        <th style="width: 16%;">Mean Latency (Seconds)</th>
+        <th style="width: 14%;">Pipeline Share (%)</th>
+        <th style="width: 16%;">Generation Velocity</th>
+        <th style="width: 16%;">Primary Hardware Bottleneck</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Stage 1: Gemma 3 4B-it</strong></td>
+        <td>Dedicated GPU VRAM</td>
+        <td>23.83s &plusmn; 3.42s</td>
+        <td>9.4%</td>
+        <td>21.48 tok/s</td>
+        <td>Tensor Core Compute</td>
+      </tr>
+      <tr>
+        <td><strong>Stage 1 WDDM Teardown</strong></td>
+        <td>OS Driver Kernel (dxgkrnl)</td>
+        <td>1.34s &plusmn; 0.12s</td>
+        <td>0.5%</td>
+        <td>N/A (Driver Sync)</td>
+        <td>WDDM Page Unmapping</td>
+      </tr>
+      <tr>
+        <td><strong>Stage 2: FLAN-T5 Large</strong></td>
+        <td>Host CPU (16 Threads)</td>
+        <td>80.17s &plusmn; 11.20s</td>
+        <td>31.5%</td>
+        <td>6.38 tok/s</td>
+        <td>CPU AVX2 SIMD Units</td>
+      </tr>
+      <tr>
+        <td><strong>Stage 3 Model Init & DMA</strong></td>
+        <td>PCIe 3.0 x4 Bus / Host RAM</td>
+        <td>3.95s &plusmn; 0.41s</td>
+        <td>1.6%</td>
+        <td>N/A (Weight Map)</td>
+        <td>PCIe DMA Bus Bandwidth</td>
+      </tr>
+      <tr>
+        <td><strong>Stage 3: Humanizer 12B</strong></td>
+        <td>Hybrid (20 GPU / 20 CPU)</td>
+        <td>144.72s &plusmn; 40.21s</td>
+        <td>56.9%</td>
+        <td>3.54 tok/s</td>
+        <td>Host DDR4 Memory Bandwidth</td>
+      </tr>
+      <tr>
+        <td><strong>Stage 3 WDDM Teardown</strong></td>
+        <td>OS Driver Kernel (dxgkrnl)</td>
+        <td>0.34s &plusmn; 0.05s</td>
+        <td>0.1%</td>
+        <td>N/A (Driver Sync)</td>
+        <td>WDDM Page Unmapping</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>Total End-to-End Pipeline</strong></td>
+        <td><strong>Heterogeneous System</strong></td>
+        <td><strong>254.35s &plusmn; 55.84s</strong></td>
+        <td><strong>100.0%</strong></td>
+        <td><strong>2.01 tok/s (Agg.)</strong></td>
+        <td><strong>Hybrid Memory Wall</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>As demonstrated in Table V:</p>
 <p>- *Stage 1 Efficiency*: Full GPU offloading of the 4B model achieves high generation velocity (<i>21.48<span> tok/s</span></i>), completing speculative drafting in only 23.83s (9.4% of total runtime).</p>
 <p>- *Stage 2 CPU Offload Cost*: Shifting FLAN-T5 Large to the CPU incurs an 80.17s execution penalty (31.5% of total runtime). While significantly slower than GPU execution, this design decision is the linchpin that enables 100% memory isolation, allowing the GPU VRAM to remain completely empty and unfragmented for the subsequent 12B model.</p>
@@ -548,68 +930,252 @@
 <p>To rigorously characterize the performance envelope and failure boundaries of EdgeCascade, we performed systematic multi-dimensional ablation studies across five architectural parameters: GPU layer offload counts (<i>ngl</i>), driver settling windows (<i>&tau;</i>), context window lengths (<i>N<sub><span>ctx</span></sub></i>), CPU core threading (<i>T<sub><span>cpu</span></sub></i>), and quantization precision.</p>
 <h3 class="subsec-heading">A. Stage 3 GPU Layer Offloading ($ngl$) Sensitivity</h3>
 <p>The allocation of transformer layers between dedicated GPU VRAM and host system RAM in Stage 3 represents the most sensitive trade-off in the entire pipeline. In Table VI, we sweep <i>ngl in [0, 40]</i> for the 40-layer Humanizer 12B model on our 6 GB RTX 3050 Laptop GPU, tracking VRAM allocation, shared PCIe memory spillover, and generation throughput.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE VI: STAGE 3 GPU LAYER OFFLOAD (ngl) SENSITIVITY ABLATION                       |
-+-------------+--------------------+--------------------+--------------------+--------------------+------------------+
-| Offloaded   | Physical Dedicated | Windows Shared     | Generation Latency | Generation Speed   | Operational      |
-| Layers (ngl)| VRAM (MiB)         | Memory (PCIe Swap) | (Seconds, N=512)   | (Tokens / Sec)     | Stability Status |
-+-------------+--------------------+--------------------+--------------------+--------------------+------------------+
-| ngl = 0     | 480.0 MiB (Driver) | 0.0 MiB            | 384.12s ± 24.15s   | 1.33 tok/s         | Safe (CPU Bound) |
-| ngl = 10    | 2,450.0 MiB        | 0.0 MiB            | 218.40s ± 18.20s   | 2.34 tok/s         | Safe (Underutil) |
-| ngl = 15    | 3,368.0 MiB        | 0.0 MiB            | 175.22s ± 14.10s   | 2.92 tok/s         | Safe (Optimal)   |
-| ngl = 20    | 4,287.0 MiB        | 0.0 MiB            | 144.72s ± 11.84s   | 3.54 tok/s         | Safe (Threshold) |
-| ngl = 25    | 5,210.0 MiB        | 340.0 MiB (Swap)   | 420.80s ± 65.40s   | 1.22 tok/s         | Severe Thrash    |
-| ngl = 30    | 5,980.0 MiB        | 1,480.0 MiB (Swap) | 1,120.40s ± 140s   | 0.45 tok/s         | Near Crash (TDR) |
-| ngl = 40    | 6,144.0 MiB (Cap)  | 3,250.0 MiB (Overs)| Failed (Crash)     | 0.00 tok/s         | Fatal CUDA OOM   |
-+-------------+--------------------+--------------------+--------------------+--------------------+------------------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE VI<br><span class="table-subtitle">STAGE 3 GPU LAYER OFFLOAD (ngl) SENSITIVITY ABLATION</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 14%;">Offload Layers (ngl)</th>
+        <th style="width: 18%;">Dedicated VRAM (MiB)</th>
+        <th style="width: 18%;">PCIe Shared Swap Memory</th>
+        <th style="width: 18%;">Latency (Seconds, N=512)</th>
+        <th style="width: 16%;">Generation Velocity</th>
+        <th style="width: 16%;">Operational Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>ngl = 0</td>
+        <td>480.0 MiB (Driver Base)</td>
+        <td>0.0 MiB</td>
+        <td>384.12s &plusmn; 24.15s</td>
+        <td>1.33 tok/s</td>
+        <td>Safe (CPU Vector Bound)</td>
+      </tr>
+      <tr>
+        <td>ngl = 10</td>
+        <td>2,450.0 MiB</td>
+        <td>0.0 MiB</td>
+        <td>218.40s &plusmn; 18.20s</td>
+        <td>2.34 tok/s</td>
+        <td>Safe (GPU Underutilized)</td>
+      </tr>
+      <tr>
+        <td>ngl = 15</td>
+        <td>3,368.0 MiB</td>
+        <td>0.0 MiB</td>
+        <td>175.22s &plusmn; 14.10s</td>
+        <td>2.92 tok/s</td>
+        <td>Safe (Sub-Optimal)</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>ngl = 20 (Optimal)</strong></td>
+        <td><strong>4,287.0 MiB</strong></td>
+        <td><strong>0.0 MiB</strong></td>
+        <td><strong>144.72s &plusmn; 11.84s</strong></td>
+        <td><strong>3.54 tok/s</strong></td>
+        <td><strong>Optimal Boundary Point</strong></td>
+      </tr>
+      <tr>
+        <td>ngl = 25</td>
+        <td>5,210.0 MiB</td>
+        <td>340.0 MiB (WDDM Swap)</td>
+        <td>420.80s &plusmn; 65.40s</td>
+        <td>1.22 tok/s</td>
+        <td>Severe Memory Thrashing</td>
+      </tr>
+      <tr>
+        <td>ngl = 30</td>
+        <td>5,980.0 MiB</td>
+        <td>1,480.0 MiB (WDDM Swap)</td>
+        <td>1,120.40s &plusmn; 140.2s</td>
+        <td>0.45 tok/s</td>
+        <td>Near Crash (TDR Warnings)</td>
+      </tr>
+      <tr>
+        <td>ngl = 40 (All GPU)</td>
+        <td>6,144.0 MiB (Cap)</td>
+        <td>3,250.0 MiB (Overflow)</td>
+        <td>Failed (Fatal Crash)</td>
+        <td>0.00 tok/s</td>
+        <td>Fatal CUDA OOM Exception</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>The empirical data reveals a sharp performance cliff:</p>
 <p>- In the regime <i>ngl in [0, 20]</i>, execution remains strictly within physical VRAM (<i>V<sub><span>VRAM</span></sub> &le; 4,287.0<span> MiB</span></i>). Shared system memory usage across the PCIe bus is identically <i>0.0<span> MiB</span></i>. Generation throughput scales linearly from <i>1.33<span> tok/s</span></i> at <i>ngl=0</i> to a maximum of <i>3.54<span> tok/s</span></i> at <i>ngl=20</i>.</p>
 <p>- However, as soon as <i>ngl</i> exceeds 20 (e.g., <i>ngl=25</i>), total VRAM demand intersects with the Windows Desktop Window Manager compositor reservation. WDDM immediately engages dynamic memory paging, evicting 340.0 MiB to system RAM across the PCIe bus. Despite having 5 additional layers on the GPU, generation latency degrades catastrophically from <i>144.72<span> s</span></i> to <i>420.80<span> s</span></i>—a <i>2.9&times;</i> slowdown.</p>
 <p>- At <i>ngl=30</i>, PCIe paging thrashing escalates, driving latency to <i>1,120.40<span> s</span></i> (<i>7.7&times;</i> slowdown) and triggering intermittent Windows TDR watchdog warnings. At <i>ngl=40</i> (full offload attempt), the system crashes with a hard CUDA OOM. This empirical proof demonstrates that <i>ngl=20</i> is the exact mathematical boundary for maximizing performance while guaranteeing zero memory thrashing.</p>
 <h3 class="subsec-heading">B. Driver Reclamation Settling Interval ($\tau_{\text{settle}}$) Sensitivity</h3>
 <p>To evaluate the necessity and tuning of Algorithm 2's settling interval, we varied <i>&tau;<sub><span>settle</span></sub> in [0.0<span> s</span>, 2.5<span> s</span>]</i> across 10 sequential pipeline invocations, monitoring residual driver memory and allocation failure rates in Table VII.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE VII: DRIVER RECLAMATION SETTLING INTERVAL (tau) SENSITIVITY                     |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| Settling Window     | Residual Post-Stage| Stage 3 Allocation | WDDM Driver Race   | End-to-End Pipeline           |
-| Duration (Seconds)  | VRAM Footprint     | Failure Rate       | Condition Frequency| Operational Stability         |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| tau = 0.0s (Naive)  | 2,840.0 MiB (Lag)  | 60.0% (OOM Crash)  | Severe (Frequent)  | Catastrophic Failures         |
-| tau = 0.2s          | 1,450.0 MiB (Lag)  | 30.0% (OOM Crash)  | Moderate           | Unacceptable Instability      |
-| tau = 0.5s          | 420.0 MiB (Partial)| 10.0% (Allocation) | Low (Intermittent) | Marginal Stability            |
-| tau = 1.0s          | 15.0 MiB (Trace)   | 0.0% (No Failures) | Rare Trace Anomaly | Stable Execution              |
-| tau = 1.2s (Chosen) | 0.0 MiB (Flushed)  | 0.0% (Zero Faults) | Zero (Eliminated)  | Perfect Deterministic Safety  |
-| tau = 2.0s          | 0.0 MiB (Flushed)  | 0.0% (Zero Faults) | Zero (Eliminated)  | Stable (Excess Idle Latency)  |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE VII<br><span class="table-subtitle">DRIVER RECLAMATION SETTLING INTERVAL (&tau;) SENSITIVITY ABLATION</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Settling Window (&tau;<sub>settle</sub>)</th>
+        <th style="width: 20%;">Residual Post-Stage VRAM</th>
+        <th style="width: 20%;">Stage 3 Allocation Failure Rate</th>
+        <th style="width: 20%;">WDDM Driver Race Frequency</th>
+        <th style="width: 22%;">System Reliability Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>&tau; = 0.0s (Naive Sequential)</td>
+        <td>2,840.0 MiB (Dealloc Lag)</td>
+        <td>60.0% (Allocation Rejection)</td>
+        <td>Severe (Frequent Driver Collisions)</td>
+        <td>Catastrophic Instability</td>
+      </tr>
+      <tr>
+        <td>&tau; = 0.2s</td>
+        <td>1,450.0 MiB (Partial Lag)</td>
+        <td>30.0% (OOM Rejection)</td>
+        <td>Moderate Race Probability</td>
+        <td>Unacceptable Failure Rate</td>
+      </tr>
+      <tr>
+        <td>&tau; = 0.5s</td>
+        <td>420.0 MiB (Residual)</td>
+        <td>10.0% (Allocation Retry)</td>
+        <td>Low (Intermittent Lockups)</td>
+        <td>Marginal Stability</td>
+      </tr>
+      <tr>
+        <td>&tau; = 1.0s</td>
+        <td>15.0 MiB (Trace Driver)</td>
+        <td>0.0% (Zero Failures)</td>
+        <td>Rare Trace Anomaly</td>
+        <td>Stable Execution</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>&tau; = 1.2s (Chosen)</strong></td>
+        <td><strong>0.0 MiB (Completely Flushed)</strong></td>
+        <td><strong>0.0% (Zero Allocation Faults)</strong></td>
+        <td><strong>Zero (Completely Eliminated)</strong></td>
+        <td><strong>Deterministic 100% Stability</strong></td>
+      </tr>
+      <tr>
+        <td>&tau; = 2.0s</td>
+        <td>0.0 MiB (Completely Flushed)</td>
+        <td>0.0% (Zero Allocation Faults)</td>
+        <td>Zero (Completely Eliminated)</td>
+        <td>Stable (Excess Pipeline Latency)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>When <i>&tau;<sub><span>settle</span></sub> = 0.0<span> s</span></i> (immediate sequential process instantiation without driver synchronization), the pipeline suffers a <i>60.0\%</i> catastrophic failure rate. Because WDDM's deferred unmapping queue has not released the pages of Stage 1, Stage 3's initialization request for <i>4,287<span> MiB</span></i> encounters an apparent memory availability of only <i>3,304<span> MiB</span></i>, triggering an immediate OOM rejection. As <i>&tau;<sub><span>settle</span></sub></i> increases, residual allocation decays exponentially, reaching absolute zero (<i>0.0<span> MiB</span></i>) at <i>&tau;<sub><span>settle</span></sub> = 1.2<span> s</span></i>. Extending the window to <i>2.0<span> s</span></i> yields no additional memory benefit while introducing unnecessary idle latency, validating <i>&tau;<sub><span>settle</span></sub> = 1.2<span> s</span></i> as the optimal empirical operating point.</p>
 <h3 class="subsec-heading">C. Context Window Length ($N_{\text{ctx}}$) Scaling & KV-Cache Growth</h3>
 <p>In Table VIII, we evaluate EdgeCascade's scalability as context length scales from <i>N<sub><span>ctx</span></sub> = 128</i> to <i>N<sub><span>ctx</span></sub> = 2048</i> tokens under the standard <i>ngl=20</i> configuration.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE VIII: CONTEXT WINDOW LENGTH (N_ctx) SCALING & KV-CACHE GROWTH                  |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| Context Length      | Stage 1 VRAM       | Stage 3 VRAM       | KV-Cache Size      | Total Pipeline Latency        |
-| (Total Tokens)      | (ngl=99, MiB)      | (ngl=20, MiB)      | (FP16 Precision)   | (Seconds, Mean ± Std)         |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| N_ctx = 128 tokens  | 2,980.0 MiB        | 4,140.0 MiB        | 32.0 MiB           | 98.40s ± 12.10s               |
-| N_ctx = 256 tokens  | 3,025.0 MiB        | 4,195.0 MiB        | 64.0 MiB           | 165.20s ± 24.50s              |
-| N_ctx = 512 tokens  | 3,105.0 MiB        | 4,287.0 MiB        | 128.0 MiB          | 254.35s ± 55.84s              |
-| N_ctx = 1024 tokens | 3,280.0 MiB        | 4,460.0 MiB        | 256.0 MiB          | 492.10s ± 82.40s              |
-| N_ctx = 2048 tokens | 3,640.0 MiB        | 4,810.0 MiB        | 512.0 MiB          | 980.50s ± 140.2s              |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE VIII<br><span class="table-subtitle">CONTEXT WINDOW LENGTH (N<sub>ctx</sub>) SCALING & KV-CACHE GROWTH</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Context Length (N<sub>ctx</sub>)</th>
+        <th style="width: 20%;">Stage 1 VRAM (ngl=99)</th>
+        <th style="width: 20%;">Stage 3 VRAM (ngl=20)</th>
+        <th style="width: 20%;">Active KV-Cache Size</th>
+        <th style="width: 22%;">End-to-End Latency</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>N<sub>ctx</sub> = 128 Tokens</td>
+        <td>2,980.0 MiB</td>
+        <td>4,140.0 MiB</td>
+        <td>32.0 MiB (FP16)</td>
+        <td>98.40s &plusmn; 12.10s</td>
+      </tr>
+      <tr>
+        <td>N<sub>ctx</sub> = 256 Tokens</td>
+        <td>3,025.0 MiB</td>
+        <td>4,195.0 MiB</td>
+        <td>64.0 MiB (FP16)</td>
+        <td>165.20s &plusmn; 24.50s</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>N<sub>ctx</sub> = 512 Tokens (Standard)</strong></td>
+        <td><strong>3,105.0 MiB</strong></td>
+        <td><strong>4,287.0 MiB</strong></td>
+        <td><strong>128.0 MiB (FP16)</strong></td>
+        <td><strong>254.35s &plusmn; 55.84s</strong></td>
+      </tr>
+      <tr>
+        <td>N<sub>ctx</sub> = 1024 Tokens</td>
+        <td>3,280.0 MiB</td>
+        <td>4,460.0 MiB</td>
+        <td>256.0 MiB (FP16)</td>
+        <td>492.10s &plusmn; 82.40s</td>
+      </tr>
+      <tr>
+        <td>N<sub>ctx</sub> = 2048 Tokens</td>
+        <td>3,640.0 MiB</td>
+        <td>4,810.0 MiB</td>
+        <td>512.0 MiB (FP16)</td>
+        <td>980.50s &plusmn; 140.2s</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>The experimental data confirms that KV-cache memory scales linearly with sequence length (<i>sim 0.25<span> MiB</span></i> per token for the active GPU layers). At <i>N<sub><span>ctx</span></sub> = 2048</i>, Stage 3 VRAM allocation expands to <i>4,810.0<span> MiB</span></i>, still safely below the 6,144 MiB physical boundary (<i>1,334<span> MiB</span></i> safety cushion). This demonstrates that EdgeCascade can support extensive context windows up to 2,048 tokens on 6 GB consumer GPUs without risking memory oversubscription.</p>
 <h3 class="subsec-heading">D. Host CPU Thread Allocation ($T_{\text{cpu}}$) for Stage 2 Verification</h3>
 <p>Because Stage 2 (FLAN-T5 Large) executes entirely on the host AMD Ryzen 7 5800H processor, we evaluated the impact of CPU thread affinity across <i>T<sub><span>cpu</span></sub> in [2, 16]</i> threads in Table IX.</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE IX: HOST CPU THREAD ALLOCATION (T_cpu) ABLATION ON STAGE 2                     |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| Allocated Host      | Stage 2 Latency    | Host CPU Package   | Total Host System  | Scaling Efficiency            |
-| Execution Threads   | (Seconds, N=512)   | Power (Watts)      | Memory Bandwidth   | Relative to Linear            |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| T_cpu = 2 Threads   | 285.40s ± 14.10s   | 18.2 Watts         | 12.4 GB/s          | 1.00x (Baseline)              |
-| T_cpu = 4 Threads   | 164.20s ± 9.80s    | 26.5 Watts         | 21.8 GB/s          | 1.74x (87.0% Efficiency)      |
-| T_cpu = 8 Threads   | 98.60s ± 6.20s     | 38.4 Watts         | 34.6 GB/s          | 2.89x (72.3% Efficiency)      |
-| T_cpu = 16 Threads  | 80.17s ± 11.20s    | 46.2 Watts         | 42.1 GB/s          | 3.56x (44.5% Efficiency)      |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE IX<br><span class="table-subtitle">HOST CPU THREAD ALLOCATION (T<sub>cpu</sub>) ABLATION ON STAGE 2</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 20%;">Allocated CPU Threads</th>
+        <th style="width: 20%;">Stage 2 Latency (N=512)</th>
+        <th style="width: 20%;">CPU Package Power</th>
+        <th style="width: 20%;">Host Memory Bandwidth</th>
+        <th style="width: 20%;">Multi-Core Scaling Efficiency</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>T<sub>cpu</sub> = 2 Threads</td>
+        <td>285.40s &plusmn; 14.10s</td>
+        <td>18.2 Watts</td>
+        <td>12.4 GB/s</td>
+        <td>1.00&times; (Baseline Reference)</td>
+      </tr>
+      <tr>
+        <td>T<sub>cpu</sub> = 4 Threads</td>
+        <td>164.20s &plusmn; 9.80s</td>
+        <td>26.5 Watts</td>
+        <td>21.8 GB/s</td>
+        <td>1.74&times; (87.0% Linear Efficiency)</td>
+      </tr>
+      <tr>
+        <td>T<sub>cpu</sub> = 8 Threads</td>
+        <td>98.60s &plusmn; 6.20s</td>
+        <td>38.4 Watts</td>
+        <td>34.6 GB/s</td>
+        <td>2.89&times; (72.3% Linear Efficiency)</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>T<sub>cpu</sub> = 16 Threads (All)</strong></td>
+        <td><strong>80.17s &plusmn; 11.20s</strong></td>
+        <td><strong>46.2 Watts</strong></td>
+        <td><strong>42.1 GB/s</strong></td>
+        <td><strong>3.56&times; (44.5% Linear Efficiency)</strong></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <p>Scaling thread allocation from 2 to 16 threads reduces Stage 2 latency from <i>285.40<span> s</span></i> to <i>80.17<span> s</span></i> (<i>3.56&times;</i> speedup). Scaling saturates beyond 8 physical cores due to the memory bandwidth ceiling of dual-channel DDR4-3200 RAM (<i>51.2<span> GB/s</span></i> theoretical, reaching <i>42.1<span> GB/s</span></i> actual under 16 threads). Setting <i>T<sub><span>cpu</span></sub> = 16</i> minimizes Stage 2 latency while operating well within the CPU's 54W sustained package power limit.</p>
 <h2 class="sec-heading">VIII. Qualitative Generation Quality & AI Detector Evasion</h2>
 <p>Beyond mechanical memory containment and latency optimization, the overarching objective of EdgeCascade is the automated synthesis of rigorous, publication-grade academic prose that passes rigorous quality gates. In this section, we analyze linguistic diversity, semantic fidelity, and evasion against statistical AI-content detection tools.</p>
@@ -624,25 +1190,67 @@
 <p>- **Type-Token Ratio (TTR)**: The ratio of unique lexical stems to total tokens, measuring vocabulary richness.</p>
 <p>- **Syntactic Entropy (<i><i>H</i><sub><span>syntax</span></sub></i>)**: Shannon entropy over the distribution of syntactic dependency trees extracted via spaCy parser.</p>
 <p>- **Statistical AI Detector Scores**: Evaluated against Binoculars [34], GPTZero Enterprise [35], and Turnitin AI Writing Indicator [36].</p>
-<div class="figure-box">+--------------------------------------------------------------------------------------------------------------------+
-|                               TABLE X: LINGUISTIC DIVERSITY & AI-CONTENT DETECTION METRICS                         |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| Pipeline Stage      | Perplexity         | Burstiness         | Type-Token Ratio   | Syntactic Entropy             |
-| & Output Artifact   | (LLaMA-3 8B Base)  | (Std Dev in Words) | (Lexical TTR)      | (Shannon Entropy)             |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| Stage 1: Gemma 3 4B | 8.42 ± 0.65 (Flat) | 4.12 words (Low)   | 0.428 (Redundant)  | 2.14 bits (Uniform)           |
-| Stage 2: FLAN-T5 L. | 14.80 ± 1.12       | 6.85 words (Mod)   | 0.512 (Moderate)   | 2.85 bits (Structured)        |
-| Stage 3: Humanizer  | 24.60 ± 2.45       | 14.82 words (High) | 0.684 (Rich)       | 4.12 bits (Diverse)           |
-| Human Baseline      | 26.80 ± 3.10       | 16.40 words (High) | 0.710 (Rich)       | 4.35 bits (Diverse)           |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| Pipeline Stage      | Binoculars Score   | GPTZero AI Conf.   | Turnitin AI Index  | AI Detection Status           |
-| & Output Artifact   | (Threshold < 0.90) | (Probability %)    | (Detected Match %) | (Pass / Fail Verdict)         |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+
-| Stage 1: Gemma 3 4B | 0.742 (AI Flagged) | 98.4% (Definite AI)| 94.2% AI Detected  | FAILED (Instant Flag)         |
-| Stage 2: FLAN-T5 L. | 0.865 (Suspect)    | 64.2% (Likely AI)  | 52.0% AI Detected  | FAILED (High Flag)            |
-| Stage 3: Humanizer  | 0.948 (Human Flag) | 1.8% (Human Text)  | 2.4% (Clean Score) | PASSED (Clean Academic Score) |
-| Human Baseline      | 0.962 (Human Flag) | 0.8% (Human Text)  | 0.0% (Clean Score) | PASSED (Ground Truth Human)   |
-+---------------------+--------------------+--------------------+--------------------+-------------------------------+</div>
+
+<div class="table-wrapper wide-element">
+  <div class="table-caption">TABLE X<br><span class="table-subtitle">LINGUISTIC DIVERSITY & AI-CONTENT DETECTION EVALUATION METRICS</span></div>
+  <table class="ieee-table">
+    <thead>
+      <tr>
+        <th style="width: 16%;">Pipeline Stage & Artifact</th>
+        <th style="width: 14%;">Perplexity (LLaMA-3)</th>
+        <th style="width: 14%;">Burstiness (&sigma;<sub>len</sub>)</th>
+        <th style="width: 12%;">Lexical TTR</th>
+        <th style="width: 12%;">Syntactic Entropy</th>
+        <th style="width: 10%;">Binoculars</th>
+        <th style="width: 10%;">GPTZero AI</th>
+        <th style="width: 12%;">Turnitin Index</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Stage 1: Gemma 3 4B-it</strong></td>
+        <td>8.42 &plusmn; 0.65</td>
+        <td>4.12 words (Flat)</td>
+        <td>0.428 (Low)</td>
+        <td>2.14 bits</td>
+        <td>0.742 (AI)</td>
+        <td>98.4% (AI)</td>
+        <td>94.2% AI Detected</td>
+      </tr>
+      <tr>
+        <td><strong>Stage 2: FLAN-T5 Large</strong></td>
+        <td>14.80 &plusmn; 1.12</td>
+        <td>6.85 words</td>
+        <td>0.512 (Mod)</td>
+        <td>2.85 bits</td>
+        <td>0.865 (Suspect)</td>
+        <td>64.2% (Likely)</td>
+        <td>52.0% AI Detected</td>
+      </tr>
+      <tr class="highlight-row">
+        <td><strong>Stage 3: Humanizer 12B</strong></td>
+        <td><strong>24.60 &plusmn; 2.45</strong></td>
+        <td><strong>14.82 words (Bursty)</strong></td>
+        <td><strong>0.684 (Rich)</strong></td>
+        <td><strong>4.12 bits</strong></td>
+        <td><strong>0.948 (Human)</strong></td>
+        <td><strong>1.8% (Clean)</strong></td>
+        <td><strong>2.4% (Passing)</strong></td>
+      </tr>
+      <tr>
+        <td><em>Human Author Baseline</em></td>
+        <td>26.80 &plusmn; 3.10</td>
+        <td>16.40 words (Bursty)</td>
+        <td>0.710 (Rich)</td>
+        <td>4.35 bits</td>
+        <td>0.962 (Human)</td>
+        <td>0.8% (Human)</td>
+        <td>0.0% (Clean)</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
 <h3 class="subsec-heading">B. Qualitative Case Study & Multi-Stage Evolution Walkthrough</h3>
 <p>To illustrate how EdgeCascade's multi-stage refinement operates in practice, we examine a concrete academic prompt: *"Discuss the architectural implications of running memory-bound LLMs on consumer edge devices."*</p>
 <p>1. *Stage 1 (Gemma 3 4B-it Raw Output)*:</p>
