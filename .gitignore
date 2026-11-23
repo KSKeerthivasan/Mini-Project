@@ -22,6 +22,8 @@ dist/
 .vite-temp/
 
 # Large Model Weights (DO NOT COMMIT 12GB+ GGUF BINARIES TO GIT)
+models/
+runtime/
 models/**/*.gguf
 models/**/*.bin
 *.gguf
