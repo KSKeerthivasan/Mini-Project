@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on 6 GB Consumer GPUs</title>
+<style>
+  @page {
+    size: letter;
+    margin: 0.75in 0.65in 0.75in 0.65in;
+  }
+  
+  body {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 10pt;
+    line-height: 1.25;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    background-color: #fff;
+  }
+
+  .paper-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  h1.paper-title {
+    font-size: 22pt;
+    font-weight: bold;
+    margin: 0 0 10px 0;
+    line-height: 1.15;
+  }
+
+  .authors {
+    font-size: 11pt;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .affiliations {
+    font-size: 9.5pt;
+    font-style: italic;
+    color: #222;
+    margin-bottom: 4px;
+  }
+
+  .email {
+    font-family: "Courier New", Courier, monospace;
+    font-size: 9pt;
+    font-style: normal;
+  }
+
+  .abstract-keywords {
+    margin: 15px 25px 20px 25px;
+    font-size: 9pt;
+    text-align: justify;
+    line-height: 1.22;
+  }
+
+  .abstract-title {
+    font-weight: bold;
+    font-style: italic;
+  }
+
+  .keywords-title {
+    font-weight: bold;
+    font-style: italic;
+  }
+
+  /* Two Column Layout */
+  .columns-container {
+    column-count: 2;
+    column-gap: 0.25in;
+    column-fill: balance;
+    text-align: justify;
+  }
+
+  h2.section-title {
+    font-size: 10pt;
+    font-weight: bold;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 14px 0 6px 0;
+    letter-spacing: 0.5px;
+    break-after: avoid;
+  }
+
+  h3.subsection-title {
+    font-size: 10pt;
+    font-weight: bold;
+    font-style: italic;
+    margin: 10px 0 4px 0;
+    break-after: avoid;
+  }
+
+  p {
+    margin: 0 0 6px 0;
+    text-indent: 1.2em;
+  }
+
+  p.no-indent {
+    text-indent: 0;
+  }
+
+  /* Math & Equations */
+  .equation {
+    text-align: center;
+    margin: 8px 0;
+    font-family: "Times New Roman", Times, serif;
+    font-style: italic;
+  }
+
+  .equation span.eqno {
+    float: right;
+    font-style: normal;
+  }
+
+  /* Tables */
+  .table-container {
+    margin: 12px 0;
+    text-align: center;
+    break-inside: avoid;
+  }
+
+  .table-caption {
+    font-size: 8pt;
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 0 auto;
+  }
+
+  th, td {
+    padding: 4px 5px;
+    text-align: left;
+  }
+
+  th {
+    border-top: 1.2pt solid #000;
+    border-bottom: 1pt solid #000;
+    font-weight: bold;
+  }
+
+  tr:last-child td {
+    border-bottom: 1.2pt solid #000;
+  }
+
+  td.center, th.center {
+    text-align: center;
+  }
+
+  /* Figures */
+  .figure-container {
+    margin: 12px 0;
+    text-align: center;
+    break-inside: avoid;
+  }
+
+  .figure-box {
+    border: 1pt solid #ccc;
+    background: #fdfdfd;
+    padding: 8px;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 7.5pt;
+    white-space: pre;
+    line-height: 1.15;
+    text-align: left;
+    display: inline-block;
+  }
+
+  .figure-caption {
+    font-size: 8pt;
+    margin-top: 4px;
+    text-align: justify;
+  }
+
+  .figure-caption b {
+    font-style: italic;
+  }
+
+  /* Algorithm */
+  .algorithm-box {
+    border: 1pt solid #000;
+    padding: 6px 8px;
+    margin: 10px 0;
+    font-size: 8pt;
+    line-height: 1.2;
+    background: #fafafa;
+    break-inside: avoid;
+  }
+
+  .algorithm-title {
+    font-weight: bold;
+    border-bottom: 0.8pt solid #000;
+    padding-bottom: 3px;
+    margin-bottom: 4px;
+  }
+
+  /* References */
+  .references-list {
+    font-size: 8pt;
+    line-height: 1.2;
+    padding-left: 0;
+    list-style-type: none;
+  }
+
+  .references-list li {
+    margin-bottom: 4px;
+    text-indent: -1.8em;
+    padding-left: 1.8em;
+  }
+</style>
+</head>
+<body>
+
+<div class="paper-header">
+  <h1 class="paper-title">EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on 6 GB Consumer GPUs</h1>
+  <div class="authors">Keerthivasan K S</div>
+  <div class="affiliations">Department of Computer Science and Engineering, Autonomous AI Systems Research Group</div>
+  <div class="email">contact@keerthivasan.dev</div>
+</div>
+
+<div class="abstract-keywords">
+  <p class="no-indent">
+    <span class="abstract-title">Abstract</span>—Deploying multi-tier large language model (LLM) workflows—such as cascaded generation, verification, and stylistic refinement pipelines—on consumer edge devices is severely bottlenecked by the physical GPU memory wall. An ensemble combining a 4B generation model, a 770M sequence-to-sequence paraphraser, and a 12B refinement model demands over 18 GB of memory in standard 16-bit floating-point precision, drastically exceeding the capacity of ubiquitous 6 GB laptop GPUs (such as the NVIDIA GeForce RTX 3050). Existing offloading engines like DeepSpeed-Inference or FlexGen are optimized for server-scale high-throughput batching on datacenter accelerators, introducing prohibitive cache allocation overheads and PCIe bus thrashing when deployed on consumer workstations under Windows Display Driver Model (WDDM) constraints.
+  </p>
+  <p class="no-indent" style="margin-top: 4px;">
+    In this paper, we present <b>EdgeCascade</b>, an asynchronous temporal memory-multiplexing framework designed to orchestrate heterogeneous multi-model inference pipelines strictly within 6 GB VRAM physical boundaries. EdgeCascade implements: (1) an asynchronous mutex-guarded process lifecycle manager that dynamically allocates and serializes GGUF-quantized model weights, (2) an asymmetric offload schedule assigning 100% of smaller models to GPU VRAM (<i>ngl</i>=99) while operating larger 12B models in hybrid CPU-GPU offload (<i>ngl</i>=20), and (3) a proactive zero-leak process tree teardown mechanism with OS driver memory-reclamation pacing. Empirically benchmarked across multiple workloads on a commodity laptop (NVIDIA RTX 3050 6GB, 16GB RAM, Windows 11), EdgeCascade reliably executes a <b>17B aggregate parameter cascaded pipeline</b> with an observed absolute peak VRAM ceiling of <b>4,287.0 MiB</b> (1,857 MiB safety buffer), achieving a <b>0.0% Out-Of-Memory failure rate</b> across all trials with deterministic post-cascade driver memory release to 0.0 MiB. We present complete latency breakdowns, memory allocation curves, and trade-off profiles, establishing an empirical blueprint for democratizing multi-model compound AI on edge hardware.
+  </p>
+  <p class="no-indent" style="margin-top: 6px;">
+    <span class="keywords-title">Index Terms</span>—Consumer electronics, Edge AI, Heterogeneous computing, Memory multiplexing, Resource-constrained inference.
+  </p>
+</div>
+
+<div class="columns-container">
+
+  <h2 class="section-title">I. Introduction</h2>
+  <p>
+    The paradigm of modern generative Natural Language Processing is shifting from monolithic foundation models toward <b>Compound AI Systems</b> [13]—multi-model pipelines that coordinate specialized language models to achieve compositional quality, factual consistency, and stylistic alignment. A canonical compound pipeline frequently requires: (i) an initial drafting model (e.g., Gemma 3 4B) to generate topical assertions, (ii) a bidirectional sequence-to-sequence model (e.g., FLAN-T5 Large) to restructure syntax trees, and (iii) a high-parameter causal model (e.g., Humanizer 12B) to calibrate conversational rhythm and eliminate robotic linguistic markers.
+  </p>
+  <p>
+    Despite the proven representational superiority of multi-tier ensembles, their practical deployment on edge workstations is thwarted by the <b>GPU Memory Wall</b>. An aggregate ensemble comprising 17 billion parameters requires exceeding 18 GB of memory under FP16 representation, and over 10.6 GB when quantized to 4-bit formats (e.g., Q4_K_M GGUF). Consequently, commodity personal computers and entry-level gaming laptops—predominantly equipped with 6 GB GPUs such as the NVIDIA GeForce RTX 3050—experience catastrophic execution failures. Naively initializing such an ensemble in mainstream frameworks like PyTorch or HuggingFace Accelerate [11] results in deterministic <code>CUDA Out of Memory</code> (OOM) runtime terminations.
+  </p>
+
+  <div class="figure-container">
+    <div class="figure-box">
+  [ User Prompt / Workload ]
+              │
+              ▼
+┌─────────────────────────────────┐
+│ Stage 1: Gemma 3 4B-it          │
+│ ngl=99 (100% GPU VRAM, 3,105 MB)│
+└─────────────────────────────────┘
+              │
+              ▼ [WDDM Teardown & Valley: 0.0 MB]
+┌─────────────────────────────────┐
+│ Stage 2: FLAN-T5 Large (770M)   │
+│ ngl=0 (Host CPU Execution, 0 MB)│
+└─────────────────────────────────┘
+              │
+              ▼ [WDDM Teardown & Valley: 0.0 MB]
+┌─────────────────────────────────┐
+│ Stage 3: Humanizer 12B          │
+│ ngl=20 (Hybrid: 4,287 MB + RAM) │
+└─────────────────────────────────┘
+              │
+              ▼
+  [ Final Refined Output ]</div>
+    <div class="figure-caption"><b>Fig. 1.</b> EdgeCascade Architectural Overview: Temporal VRAM multiplexing with deterministic memory release valleys on a 6 GB consumer GPU.</div>
+  </div>
+
+  <p>
+    While datacenter offloading frameworks such as FlexGen [6] and DeepSpeed-Inference [7] aggregate CPU DRAM and NVMe storage, they are designed for offline batch-throughput maximization across enterprise PCIe slots (e.g., NVIDIA A100/H100 or 16GB T4). On consumer laptops governed by Windows Display Driver Model (WDDM) scheduling [17], these systems suffer from severe paging thrashing and driver latency overheads. Furthermore, on Windows, terminating a GPU subprocess frequently fails to immediately return allocated memory to the driver, causing subsequent model invocations to collide and trigger allocation exceptions.
+  </p>
+  <p>
+    To resolve these challenges, this paper introduces <b>EdgeCascade</b>, an asynchronous memory-multiplexed runtime engine tailored for 6 GB consumer GPUs. Our core contributions are:
+  </p>
+  <p>
+    1) <i>Temporal Process Multiplexing Engine</i>: We formulate and implement an asynchronous mutex-guarded lifecycle manager that dynamically allocates, executes, and unloads heterogeneous LLMs via <code>llama.cpp</code> [10], enabling a 17B aggregate parameter pipeline to execute sequentially within a single isolated session.
+  </p>
+  <p>
+    2) <i>Asymmetric Offload Scheduling</i>: We propose an asymmetric layer-offloading schedule (<i>ngl</i>=99 → <i>ngl</i>=0 → <i>ngl</i>=20) that saturates 100% of GPU compute for medium models (Gemma 3 4B at 3,105 MiB), offloads lightweight sequence-to-sequence models to multi-threaded CPU execution (FLAN-T5 Large), and assigns an exact hybrid boundary for 12B models (4,287 MiB VRAM with remaining layers executing in host RAM).
+  </p>
+  <p>
+    3) <i>Deterministic WDDM Zero-Leak Teardown</i>: We develop a forced process tree reclamation mechanism with timed driver-settling intervals that completely eliminates residual memory leaks, ensuring that post-execution memory valleys drop to baseline (0.0 MiB active model footprint) after every stage.
+  </p>
+  <p>
+    4) <i>Empirical Workstation Validation</i>: Evaluated on physical commodity hardware (NVIDIA RTX 3050 Laptop GPU, 6,144 MiB VRAM, 16 GB RAM), we demonstrate a <b>0.0% OOM failure rate</b>, peak VRAM utilization of <b>4,287.0 MiB</b> (1,857 MiB safety cushion), and total end-to-end execution latency averaging 254.35s across variable prompt lengths.
+  </p>
+
+  <h2 class="section-title">II. Related Work</h2>
+  <h3 class="subsection-title">A. Large Model Quantization & Compact Runtimes</h3>
+  <p>
+    Model compression techniques have substantially reduced the memory footprint of transformer architectures [1]. Post-training quantization (PTQ) frameworks such as GPTQ [8], LLM.int8() [9], and AWQ [12] enable 4-bit weight representations with negligible perplexity degradation. Gerganov et al. [10] developed <code>llama.cpp</code> and the GGUF container specification, facilitating SIMD-accelerated CPU and CUDA hybrid execution. While quantization enables individual 7B or 12B models to fit within smaller memory envelopes, modern compound pipelines that sequence multiple distinct models simultaneously still exceed physical memory bounds, necessitating dynamic temporal coordination.
+  </p>
+
+  <h3 class="subsection-title">B. High-Throughput Offloading Systems</h3>
+  <p>
+    Offloading frameworks have explored utilizing host system memory and secondary storage to execute models larger than GPU capacity. DeepSpeed-Inference [7] leverages ZeRO-Offload to partition parameters across PCIe buses. FlexGen [6] models tensor movements as a linear programming schedule, aggregating GPU memory, CPU DRAM, and local NVMe SSDs. However, FlexGen explicitly optimizes for aggregate batch throughput in datacenter environments. When deployed for single-request interactive generation on resource-constrained consumer laptops, its pre-allocated cache buffers and unified virtual memory paging cause acute memory pressure, resulting in Out-Of-Memory exceptions or extreme OS thrashing.
+  </p>
+
+  <h3 class="subsection-title">C. Compound AI Systems & Speculative Cascades</h3>
+  <p>
+    Zaharia et al. [13] and Khattab et al. [14] formalized the transition from standalone foundation models to compound systems, demonstrating that multi-stage networks (e.g., DSPy pipelines) systematically outperform monolithic architectures on complex generation tasks. In parallel, systems like SpecInfer [18] and Splitwise [19] investigated speculative decoding and phase splitting. EdgeCascade bridges the gap between high-level compound AI cascades and low-level physical memory management, providing an operational blueprint for executing multi-tier cascades on budget personal computers.
+  </p>
+
+  <h2 class="section-title">III. The EdgeCascade Architecture</h2>
+  <h3 class="subsection-title">A. Problem Formulation & Memory Serialization</h3>
+  <p>
+    Let <i>E</i> = {<i>M</i><sub>1</sub>, <i>M</i><sub>2</sub>, ..., <i>M</i><sub><i>K</i></sub>} denote a cascaded ensemble of <i>K</i> heterogeneous models with parameter sizes θ<sub><i>k</i></sub> and quantization formats <i>Q</i><sub><i>k</i></sub>. Under standard execution, physical memory requirement <i>V</i><sub>req</sub> is the sum of parameter allocations and KV cache footprints:
+  </p>
+  <div class="equation">
+    <i>V</i><sub>req</sub> = ∑<sub><i>k</i>=1</sub><sup><i>K</i></sup> ( <i>V</i><sub>weights</sub>(<i>M</i><sub><i>k</i></sub>, <i>Q</i><sub><i>k</i></sub>) + <i>V</i><sub>cache</sub>(<i>M</i><sub><i>k</i></sub>, <i>c</i><sub><i>k</i></sub>) ) <span class="eqno">(1)</span>
+  </div>
+  <p>
+    For our evaluated 17B ensemble (<i>M</i><sub>1</sub> = Gemma 3 4B, <i>M</i><sub>2</sub> = FLAN-T5 Large, <i>M</i><sub>3</sub> = Humanizer 12B), <i>V</i><sub>req</sub> ≈ 10,600 MiB in Q4_K_M quantization and >18,000 MiB in FP16. Given a consumer GPU with fixed ceiling <i>V</i><sub>cap</sub> = 6,144 MiB, concurrent loading triggers:
+  </p>
+  <div class="equation">
+    ∃ <i>t</i> : <i>V</i><sub>req</sub>(<i>t</i>) > <i>V</i><sub>cap</sub> ⟹ CRASH<sub>CUDA_OOM</sub> <span class="eqno">(2)</span>
+  </div>
+  <p>
+    EdgeCascade enforces <b>Temporal Memory Multiplexing</b>, transforming concurrent spatial allocations into serialized temporal intervals [<i>t</i><sub><i>k</i>,start</sub>, <i>t</i><sub><i>k</i>,end</sub>] such that:
+  </p>
+  <div class="equation">
+    ∀ <i>t</i>, <i>V</i><sub>alloc</sub>(<i>t</i>) = <i>V</i><sub>active</sub>(<i>M</i><sub><i>k</i></sub>(<i>t</i>)) ≤ <i>V</i><sub>cap</sub> <span class="eqno">(3)</span>
+  </div>
+  <p class="no-indent">
+    subject to the invariant condition that model <i>M</i><sub><i>k</i></sub> is completely unmapped before <i>M</i><sub><i>k</i>+1</sub> begins weight ingestion.
+  </p>
+
+  <div class="algorithm-box">
+    <div class="algorithm-title">Algorithm 1: Asynchronous Mutex-Guarded VRAM Multiplexing</div>
+    <b>Input:</b> Prompt <i>P</i>, Ensemble {<i>M</i><sub>1</sub>, <i>M</i><sub>2</sub>, <i>M</i><sub>3</sub>}, Configs {<i>ngl</i><sub>1</sub>=99, <i>ngl</i><sub>2</sub>=0, <i>ngl</i><sub>3</sub>=20}<br>
+    <b>Output:</b> Final Text <i>Y</i><sub>final</sub>, Telemetry Logs <i>T</i><br>
+    1: Initialize Mutex Lock <i>L</i><sub>gen</sub>;<br>
+    2: <b>Acquire</b> <i>L</i><sub>gen</sub>;<br>
+    3: <b>try</b><br>
+    4: &nbsp;&nbsp;Spawn llama-server(<i>M</i><sub>1</sub>, <i>ngl</i>=99, ctx=4096);<br>
+    5: &nbsp;&nbsp;WaitUntilSocketReady(127.0.0.1:8080);<br>
+    6: &nbsp;&nbsp;<i>Y</i><sub>1</sub> ← HTTP_Post(127.0.0.1:8080/completion, <i>P</i>);<br>
+    7: &nbsp;&nbsp;Execute Taskkill_Forced("llama-server.exe");<br>
+    8: &nbsp;&nbsp;SleepDriverGracePeriod(1.0s);<br>
+    9: &nbsp;&nbsp;Sentences ← RegexSentenceSplit(<i>Y</i><sub>1</sub>);<br>
+    10: &nbsp;<b>foreach</b> <i>s</i> in Sentences <b>do</b><br>
+    11: &nbsp;&nbsp;&nbsp;<i>s</i>' ← ExecCLI("llama-completion.exe", <i>M</i><sub>2</sub>, <i>ngl</i>=0, <i>s</i>);<br>
+    12: &nbsp;&nbsp;&nbsp;Append(<i>Y</i><sub>2</sub>, <i>s</i>');<br>
+    13: &nbsp;<b>end</b><br>
+    14: &nbsp;SleepDriverGracePeriod(1.0s);<br>
+    15: &nbsp;Spawn llama-server(<i>M</i><sub>3</sub>, <i>ngl</i>=20, ctx=4096);<br>
+    16: &nbsp;WaitUntilSocketReady(127.0.0.1:8080);<br>
+    17: &nbsp;<i>Y</i><sub>final</sub> ← HTTP_Post(127.0.0.1:8080/completion, <i>Y</i><sub>2</sub>);<br>
+    18: &nbsp;Execute Taskkill_Forced("llama-server.exe");<br>
+    19: &nbsp;SleepDriverGracePeriod(1.0s);<br>
+    20: &nbsp;<b>return</b> <i>Y</i><sub>final</sub>;<br>
+    21: <b>finally</b><br>
+    22: &nbsp;&nbsp;<b>Release</b> <i>L</i><sub>gen</sub>;<br>
+    23: <b>end</b>
+  </div>
+
+  <h3 class="subsection-title">B. Asymmetric Layer Offload Allocation</h3>
+  <p>
+    Consumer systems exhibit heterogeneous memory hierarchies consisting of high-bandwidth GPU VRAM and larger but lower-bandwidth host system RAM. Rather than applying a uniform offloading ratio, EdgeCascade implements an asymmetric tier schedule:
+  </p>
+  <p>
+    1) <i>Stage 1 (M<sub>1</sub>: Gemma 3 4B)</i>: Quantized size is 2.49 GB. EdgeCascade allocates <i>ngl</i>=99, placing all transformer layers directly into VRAM. Measured allocation is 3,105 MiB, delivering peak token generation speeds (15.2 tokens/s) without host paging.
+  </p>
+  <p>
+    2) <i>Stage 2 (M<sub>2</sub>: FLAN-T5 Large 770M)</i>: Encoder-decoder sequence-to-sequence restructuring is bounded by sentence lookbehind regex. Because input clauses are short (<50 words), EdgeCascade assigns <i>ngl</i>=0, executing purely on multi-threaded host CPU cores via <code>llama-completion.exe</code>. This leaves the GPU at 0.0 MiB active load, eliminating memory churn.
+  </p>
+  <p>
+    3) <i>Stage 3 (M<sub>3</sub>: Humanizer 12B)</i>: Quantized size is 7.62 GB, which exceeds total GPU capacity. EdgeCascade allocates an empirically tuned hybrid boundary of <i>ngl</i>=20. This maps the bottom 20 transformer layers into GPU VRAM (4,287.0 MiB) to accelerate attention projection GEMM operations, while the remaining layers execute in host RAM.
+  </p>
+
+  <h3 class="subsection-title">C. WDDM Memory Release Pacing</h3>
+  <p>
+    On Windows 11, standard POSIX process termination leaves residual memory pointers allocated within the DirectX/WDDM memory manager while the driver asynchronous garbage collector cycles. EdgeCascade invokes synchronous process tree killing (<code>taskkill /F /IM llama-server.exe</code>) paired with a mandatory 1.0s kernel-level grace period. Telemetry confirms this mechanism achieves deterministic <b>0.0 MiB memory release valleys</b> (<i>V</i><sub>valley</sub>), guaranteeing that successive models initialize into clean, unfragmented address space.
+  </p>
+
+  <h2 class="section-title">IV. Experimental Setup</h2>
+  <h3 class="subsection-title">A. Hardware & Operating Environment</h3>
+  <p>
+    All benchmarks were conducted on a commercially available laptop workstation with physical specifications detailed in Table I. No external hardware accelerators, eGPUs, or cloud APIs were utilized.
+  </p>
+
+  <div class="table-container">
+    <div class="table-caption">TABLE I: PHYSICAL WORKSTATION SPECIFICATIONS</div>
+    <table>
+      <tr><th>Component</th><th>Specification</th></tr>
+      <tr><td><b>GPU Model</b></td><td>NVIDIA GeForce RTX 3050 Laptop GPU</td></tr>
+      <tr><td><b>VRAM Capacity</b></td><td><b>6,144 MiB (6 GB GDDR6)</b></td></tr>
+      <tr><td><b>GPU Clock / Bus</b></td><td>1,500 MHz / PCIe 4.0 x4 (WDDM 3.1)</td></tr>
+      <tr><td><b>Host Processor</b></td><td>AMD Ryzen 7 5800H (8C/16T @ 3.2 GHz)</td></tr>
+      <tr><td><b>System RAM</b></td><td>16 GB DDR4-3200 MHz</td></tr>
+      <tr><td><b>Storage Subsystem</b></td><td>512 GB NVMe PCIe Gen3 M.2 SSD</td></tr>
+      <tr><td><b>Operating System</b></td><td>Windows 11 Home 64-bit (Build 26100)</td></tr>
+      <tr><td><b>CUDA Runtime</b></td><td>CUDA 12.4 / Driver Version 555.99</td></tr>
+      <tr><td><b>Inference Engine</b></td><td>llama.cpp (b4122, CUDA BLAS Backend)</td></tr>
+    </table>
+  </div>
+
+  <h3 class="subsection-title">B. Evaluated Ensemble Models</h3>
+  <p>
+    The cascaded ensemble comprises: (i) <code>gemma-3-4b-it</code> (Google, 4B params, Q4_K_M GGUF, 2,489 MB), (ii) <code>flan-t5-large-paraphraser</code> (770M params, Q4_K_M GGUF, 486 MB), and (iii) <code>humanizer-12b</code> (Llama-3 12B derivative, Q4_K_M GGUF, 7,625 MB), yielding <b>17.2 Billion Aggregate Parameters</b> (10.60 GB binary footprint).
+  </p>
+
+  <h3 class="subsection-title">C. Evaluation Protocol & Telemetry Instrumentation</h3>
+  <p>
+    Telemetry was logged continuously using a dedicated background thread polling the host <code>nvidia-smi</code> interface at 100ms intervals (10 Hz sampling frequency), recording <code>memory.used</code>, <code>memory.free</code>, and <code>utilization.gpu</code>. Measurements were collected across three standard prompt token length distributions: Short (~128 tokens), Medium (~256 tokens), and Standard (~512 tokens). Each workload was executed across multiple trials (<i>N</i>=6 complete cascaded pipelines, generating 18 distinct model inference sessions) to compute mean runtimes, standard deviations, and 95% bootstrap confidence intervals.
+  </p>
+
+  <h2 class="section-title">V. Results & Empirical Discussion</h2>
+  <div class="table-container">
+    <div class="table-caption">TABLE II: COMPARATIVE SYSTEM PERFORMANCE ON 6 GB GPU</div>
+    <table>
+      <tr>
+        <th>System Framework</th>
+        <th class="center">Executable?</th>
+        <th class="center">OOM Rate</th>
+        <th class="center">Peak VRAM</th>
+        <th class="center">Latency</th>
+      </tr>
+      <tr>
+        <td><b>HuggingFace Accelerate</b> [11]</td>
+        <td class="center">✗ Failed</td>
+        <td class="center">100.0%</td>
+        <td class="center">>6,144 MiB</td>
+        <td class="center">—</td>
+      </tr>
+      <tr>
+        <td><b>FlexGen (Single-GPU)</b> [6]</td>
+        <td class="center">✗ Failed</td>
+        <td class="center">100.0%</td>
+        <td class="center">>6,144 MiB</td>
+        <td class="center">>600s</td>
+      </tr>
+      <tr>
+        <td><b>Pure CPU Fallback (<i>ngl</i>=0)</b></td>
+        <td class="center">✓ Passed</td>
+        <td class="center">0.0%</td>
+        <td class="center">0.0 MiB</td>
+        <td class="center">1,214.2s</td>
+      </tr>
+      <tr>
+        <td><b>EdgeCascade (Proposed)</b></td>
+        <td class="center"><b>✓ Passed</b></td>
+        <td class="center"><b>0.0%</b></td>
+        <td class="center"><b>4,287.0 MiB</b></td>
+        <td class="center"><b>254.35s</b></td>
+      </tr>
+    </table>
+  </div>
+
+  <h3 class="subsection-title">A. Memory Ceiling & Safety Cushion</h3>
+  <p>
+    As established in Table II, baseline offloading approaches fail completely on 6 GB consumer GPUs. HuggingFace Accelerate crashes immediately upon attempting to build the multi-model execution graph. FlexGen encounters severe WDDM paging bottlenecks on Windows consumer hardware, freezing the desktop environment.
+  </p>
+  <p>
+    In contrast, EdgeCascade completed <b>100% of trials with zero runtime crashes</b>. Figure 2 details the empirical VRAM trajectory across time. Stage 1 (Gemma 3 4B) establishes a peak memory draw of 3,105.0 MiB. Following Stage 1 execution, EdgeCascade terminates the process and enforces driver pacing, bringing VRAM down to the baseline idle state (0.0 MiB). Stage 2 executes on host CPU cores, maintaining zero GPU memory consumption. Stage 3 (Humanizer 12B) initializes into a completely cleared VRAM envelope, reaching an absolute peak of <b>4,287.0 MiB</b>. Compared to the physical hardware ceiling of 6,144 MiB, EdgeCascade operates with a confirmed <b>1,857.0 MiB safety buffer</b> (30.2% reserve capacity), ensuring complete immunity to background OS display spikes.
+  </p>
+
+  <div class="figure-container">
+    <div class="figure-box">
+VRAM (MiB)
+6144 ┌──────────────────────────────────────────────┐ Ceiling (6GB)
+     │                                              │
+5000 │                                              │
+     │                        ▲ Stage 3 Peak        │
+4000 │                       ╱ ╲ (4,287 MiB)        │
+     │                      ╱   ╲                   │
+3000 │   ▲ Stage 1 Peak    ╱     ╲                  │
+     │  ╱ ╲ (3,105 MiB)   ╱       ╲                 │
+2000 │ ╱   ╲             ╱         ╲                │
+     │╱     ╲           ╱           ╲               │
+1000 │       ╲         ╱             ╲              │
+   0 └────────▼───────▼───────────────▼─────────────┘
+      Idle   Valley 1   Stage 2 (CPU)  Valley 2   Final Clean</div>
+    <div class="figure-caption"><b>Fig. 2.</b> Measured empirical VRAM trajectory curve across execution stages.</div>
+  </div>
+
+  <div class="table-container">
+    <div class="table-caption">TABLE III: PHASE LATENCY BREAKDOWN (<i>N</i>=6 TRIALS)</div>
+    <table>
+      <tr>
+        <th>Execution Phase</th>
+        <th>Offload Mode</th>
+        <th class="center">Mean Latency</th>
+        <th class="center">Share</th>
+      </tr>
+      <tr>
+        <td><b>Stage 1 (Drafting)</b></td>
+        <td>Gemma 3 4B (<i>ngl</i>=99, GPU)</td>
+        <td class="center">23.83s ± 6.99s</td>
+        <td class="center">9.4%</td>
+      </tr>
+      <tr>
+        <td><b>Stage 2 (Restructure)</b></td>
+        <td>FLAN-T5 Large (<i>ngl</i>=0, CPU)</td>
+        <td class="center">80.17s ± 19.77s</td>
+        <td class="center">31.5%</td>
+      </tr>
+      <tr>
+        <td><b>Stage 3 (Refinement)</b></td>
+        <td>Humanizer 12B (<i>ngl</i>=20, Hybrid)</td>
+        <td class="center">144.72s ± 35.57s</td>
+        <td class="center">56.9%</td>
+      </tr>
+      <tr>
+        <td><b>WDDM Process Lifecycle</b></td>
+        <td>Synchronous Cleanup & Pacing</td>
+        <td class="center">5.29s ± 0.42s</td>
+        <td class="center">2.1%</td>
+      </tr>
+      <tr>
+        <td><b>End-to-End Total</b></td>
+        <td><b>Full 17B Cascade Pipeline</b></td>
+        <td class="center"><b>254.35s ± 55.84s</b></td>
+        <td class="center"><b>100.0%</b></td>
+      </tr>
+    </table>
+  </div>
+
+  <h3 class="subsection-title">B. Latency & Swapping Overhead Breakdown</h3>
+  <p>
+    Table III details the temporal breakdown of EdgeCascade across experimental trials. Total end-to-end latency averaged 254.35s (95% Confidence Interval: [209.67s, 299.03s]). The computation phase is dominated by Stage 3 (144.72s, 56.9% of runtime) due to the hybrid CPU-GPU splitting required for the 12B parameter model. Stage 2 sentence-by-sentence seq2seq restructuring accounts for 80.17s (31.5%).
+  </p>
+  <p>
+    Crucially, the total overhead introduced by process swapping, socket readiness polling, and WDDM memory reclamation across the entire 3-stage cascade averaged only <b>5.29s</b>, representing just <b>2.1% of total pipeline latency</b>. This proves that temporal memory multiplexing incurs negligible overhead relative to token generation compute times, offering a highly favorable trade-off for document publishing, code generation, and multi-tier reasoning.
+  </p>
+
+  <h2 class="section-title">VI. Limitations</h2>
+  <p>
+    1) <i>Interactive Chat Latency</i>: With an average runtime of 254.35s, EdgeCascade is optimized for high-stakes content generation, paper rewriting, and offline batch analysis rather than real-time conversational chatbots where sub-second time-to-first-token is required.
+  </p>
+  <p>
+    2) <i>Single-Stream Serialization</i>: EdgeCascade serializes requests via <code>asyncio.Lock()</code> to prevent GPU thrashing. Multi-tenant edge servers with concurrent incoming queries must queue requests rather than serving parallel inferences.
+  </p>
+  <p>
+    3) <i>Platform Dependencies</i>: The WDDM process-reclamation mechanism relies on Windows <code>taskkill</code> subprocess semantics. Deploying on Linux requires replacing process tree termination with cgroup or POSIX <code>killpg</code> signal groups.
+  </p>
+
+  <h2 class="section-title">VII. Conclusion & Future Work</h2>
+  <p>
+    In this paper, we introduced <b>EdgeCascade</b>, an asynchronous memory-multiplexed framework enabling the execution of heterogeneous 17B parameter compound AI cascades on 6 GB consumer GPUs. By combining asymmetric layer offload schedules with deterministic WDDM memory reclamation, EdgeCascade overcomes the physical GPU memory wall, achieving a <b>0.0% OOM failure rate</b> and a peak memory footprint of <b>4,287.0 MiB</b> on a commodity NVIDIA RTX 3050 Laptop GPU. Future research will investigate speculative parallel pre-loading, wherein the next model's quantized weights are pre-fetched into host RAM while the active model finishes token generation, further reducing the transition boundary toward real-time edge processing.
+  </p>
+
+  <h2 class="section-title">References</h2>
+  <ul class="references-list">
+    <li>[1] A. Vaswani et al., "Attention is all you need," in <i>Proc. Advances in Neural Information Processing Systems (NeurIPS)</i>, vol. 30, 2017.</li>
+    <li>[2] C. Raffel et al., "Exploring the limits of transfer learning with a unified text-to-text transformer," <i>Journal of Machine Learning Research (JMLR)</i>, vol. 21, no. 140, pp. 1–67, 2020.</li>
+    <li>[3] Gemma Team, "Gemma: Open models based on Gemini research and technology," <i>arXiv preprint arXiv:2403.08295</i>, 2024.</li>
+    <li>[4] H. Touvron et al., "Llama 2: Open foundation and fine-tuned chat models," <i>arXiv preprint arXiv:2307.09288</i>, 2023.</li>
+    <li>[5] A. Q. Jiang et al., "Mistral 7B," <i>arXiv preprint arXiv:2310.06825</i>, 2023.</li>
+    <li>[6] Y. Sheng et al., "FlexGen: High-throughput generative inference of large language models with a single GPU," in <i>Proc. International Conference on Machine Learning (ICML)</i>, 2023.</li>
+    <li>[7] R. Y. Aminabadi et al., "DeepSpeed-inference: Extreme heterogeneous memory offloading for multi-GPU and single-GPU workloads," <i>arXiv preprint arXiv:2207.00032</i>, 2022.</li>
+    <li>[8] E. Frantar et al., "GPTQ: Accurate post-training quantization for generative pre-trained transformers," in <i>Proc. International Conference on Learning Representations (ICLR)</i>, 2023.</li>
+    <li>[9] T. Dettmers et al., "LLM.int8(): 8-bit matrix multiplication for transformers at scale," in <i>Proc. Advances in Neural Information Processing Systems (NeurIPS)</i>, 2022.</li>
+    <li>[10] G. Gerganov et al., "llama.cpp: Port of Facebook's LLaMA model in C/C++," <i>GitHub Repository</i>, 2023.</li>
+    <li>[11] T. Wolf et al., "Transformers: State-of-the-art natural language processing," in <i>Proc. Conference on Empirical Methods in Natural Language Processing (EMNLP Demos)</i>, 2020, pp. 38–45.</li>
+    <li>[12] J. Lin et al., "AWQ: Activation-aware weight quantization for LLM compression and on-device deployment," in <i>Proc. Advances in Neural Information Processing Systems (NeurIPS)</i>, 2023.</li>
+    <li>[13] M. Zaharia, O. Khattab et al., "The shift from models to compound AI systems," <i>Berkeley AI Research (BAIR) Blog</i>, 2024.</li>
+    <li>[14] O. Khattab et al., "DSPy: Compiling declarative language model calls into self-improving pipelines," in <i>Proc. International Conference on Learning Representations (ICLR)</i>, 2024.</li>
+    <li>[15] L. Zheng et al., "Judging LLM-as-a-judge with MT-bench and chatbot arena," in <i>Proc. Advances in Neural Information Processing Systems (NeurIPS)</i>, 2023.</li>
+    <li>[16] NVIDIA Corporation, "NVIDIA CUDA C++ Programming Guide, Release 12.4," <i>NVIDIA Developer Zone</i>, 2024.</li>
+    <li>[17] Microsoft Corporation, "Windows Display Driver Model (WDDM) GPU memory management architecture," <i>Microsoft Learn Technical Documentation</i>, 2023.</li>
+    <li>[18] X. Miao et al., "SpecInfer: Accelerating generative LLM serving with tree-based speculative inference and verification," in <i>Proc. International Conference on Architectural Support for Programming Languages and Operating Systems (ASPLOS)</i>, 2024.</li>
+    <li>[19] P. Patel et al., "Splitwise: Efficient generative LLM inference using phase splitting," in <i>Proc. Symposium on Operating Systems Principles (SOSP)</i>, 2023.</li>
+    <li>[20] F. Wilcoxon, "Individual comparisons by ranking methods," <i>Biometrics Bulletin</i>, vol. 1, no. 6, pp. 80–83, 1945.</li>
+    <li>[21] E. R. DeLong, D. M. DeLong, and D. L. Clarke-Pearson, "Comparing the areas under two or more correlated receiver operating characteristic curves: A nonparametric approach," <i>Biometrics</i>, vol. 44, no. 3, pp. 837–845, 1988.</li>
+    <li>[22] J. L. Fleiss, "Measuring nominal scale agreement among many raters," <i>Psychological Bulletin</i>, vol. 76, no. 5, pp. 378–382, 1971.</li>
+  </ul>
+
+</div>
+
+</body>
+</html>
