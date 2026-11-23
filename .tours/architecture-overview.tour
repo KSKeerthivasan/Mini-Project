@@ -1,0 +1,62 @@
+{
+  "$schema": "https://aka.ms/codetour-schema",
+  "title": "LocalAIContentStudio Architecture Tour",
+  "description": "Step-by-step architectural walkthrough of the 3-stage local LLM pipeline and VRAM management.",
+  "ref": "main",
+  "steps": [
+    {
+      "file": "start.bat",
+      "line": 1,
+      "title": "Application Entry Point (Windows)",
+      "description": "The startup script validates Python 3.12, sets up the virtual environment, installs backend dependencies, verifies CUDA runtime for llama.cpp, and launches the FastAPI server and React UI."
+    },
+    {
+      "file": "backend/main.py",
+      "line": 30,
+      "title": "VRAM Concurrency Lock",
+      "description": "The workstation fits only one model in 6GB VRAM at a time. generation_lock serializes all generation requests to prevent model contention mid-inference."
+    },
+    {
+      "file": "backend/services/llama_manager.py",
+      "line": 28,
+      "title": "Hardware & Server Manager (llama_manager.py)",
+      "description": "Controls the lifecycle of llama-server.exe. Handles launching models, verifying readiness over HTTP, and forcefully clearing VRAM using taskkill on model switch."
+    },
+    {
+      "file": "backend/services/gemini_service.py",
+      "line": 43,
+      "title": "Stage 1 (Cloud): Gemini Service",
+      "description": "When MODEL1=true, generation routes to Gemini Cloud. If network or quotas fail, backend/main.py seamlessly falls back to local Gemma."
+    },
+    {
+      "file": "backend/services/gemma_service.py",
+      "line": 33,
+      "title": "Stage 1 (Local): Gemma 3 4B Generator",
+      "description": "Generates the initial draft content. Full offload to GPU VRAM (ngl=99) using ~2.5GB VRAM on RTX 3050."
+    },
+    {
+      "file": "backend/services/flan_t5_service.py",
+      "line": 66,
+      "title": "Stage 2: FLAN-T5 Paraphraser & Restructurer",
+      "description": "Splits text into sentences, paraphrases them to alter sentence structure and break n-gram predictability while strictly keeping markdown headings, lists, and named entities."
+    },
+    {
+      "file": "backend/services/humanizer_service.py",
+      "line": 53,
+      "title": "Stage 3: Humanizer 12B Style Polisher",
+      "description": "Refines the text using a 12B parameter model. Uses hybrid GPU/CPU offload (ngl=20, ~4.2GB VRAM, remaining in system RAM) to eradicate AI cliches and adjust natural cadence."
+    },
+    {
+      "file": "backend/main.py",
+      "line": 194,
+      "title": "Pipeline Coordinator (/api/pipeline)",
+      "description": "Orchestrates the sequential flow: Stage 1 -> Unload -> Stage 2 -> Unload -> Stage 3 -> Unload, recording timing benchmarks for each stage."
+    },
+    {
+      "file": "frontend/src/App.tsx",
+      "line": 66,
+      "title": "ChatGPT Interface & Stage Diff View",
+      "description": "React 19 chat interface displaying conversational history, expandable thought pills for each stage, and a side-by-side comparison modal."
+    }
+  ]
+}

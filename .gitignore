@@ -1,0 +1,41 @@
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Virtual Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Node & Frontend
+node_modules/
+dist/
+.vite/
+.vite-temp/
+
+# Large Model Weights (DO NOT COMMIT 12GB+ GGUF BINARIES TO GIT)
+models/**/*.gguf
+models/**/*.bin
+*.gguf
+runtime/llama.cpp/*.exe
+runtime/llama.cpp/*.dll
+
+# Logs & Temporary files
+logs/*
+!logs/.gitkeep
+temp/
+*.log
+
+# GitNexus & Cache Databases
+.gitnexus/lbug
+.gitnexus/parse-cache/
+.gitnexus/parsedfile-cache/
+.qodo/
