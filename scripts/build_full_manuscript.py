@@ -33,31 +33,27 @@ def build_markdown():
     
     abstract_text = (
         "### Abstract\n"
-        "*Modern frontier large language models (LLMs) increasingly exceed the physical memory "
-        "boundaries of consumer-grade edge workstations. While cloud-hosted compound AI architectures "
-        "rely on multi-GPU server clusters with hundreds of gigabytes of aggregate High Bandwidth "
-        "Memory (HBM), local edge deployments are strictly bounded by hardware cost, thermal dissipation, "
-        "and physical memory capacity. Consumer computing hardware, typically equipped with 6 GB GDDR6 "
-        "dedicated video RAM (VRAM), suffers catastrophic Out-Of-Memory (OOM) failures or severe "
-        "operating system memory swapping when attempting to execute multi-model ensembles. In this paper, "
-        "we introduce EdgeCascade, an architectural orchestration framework that enables the deterministic, "
-        "low-latency execution of a 17.2-billion aggregate parameter heterogeneous compound AI system on a "
-        "single 6 GB consumer GPU (NVIDIA GeForce RTX 3050 Laptop). EdgeCascade resolves the physical memory "
-        "wall through three core mechanisms: (1) a mutex-guarded dynamic memory-multiplexing lifecycle protocol "
-        "that enforces mutually exclusive process instantiation across sequential execution phases; (2) an "
-        "asymmetric hybrid offloading allocation that pins intermediate deterministic verification workloads "
-        "to the host CPU while dynamically partitioning heavy generative workloads between GPU VRAM and system "
-        "RAM; and (3) a proactive Windows Display Driver Model (WDDM 3.1) memory release pacing engine that "
-        "eliminates driver allocation race conditions and asynchronous deallocation lag. In empirical "
-        "evaluations across Short (128 tokens), Medium (256 tokens), and Standard (512 tokens) workloads, "
-        "EdgeCascade achieves an aggregate peak VRAM footprint of 4,287.0 MiB, preserving a 1,857.0 MiB "
-        "(30.2%) physical safety cushion beneath the 6,144 MiB hardware boundary with a 0.0% OOM failure "
-        "rate across all trials. EdgeCascade completes the end-to-end multi-stage cascade with a total execution "
-        "latency of 254.35s ± 55.84s, outperforming state-of-the-art offloading baselines that either crash "
-        "or degrade into catastrophic paging thrashing. Furthermore, qualitative analysis reveals that the "
-        "multi-stage verification and refinement pipeline systematically elevates syntactic diversity and "
-        "reduces machine-generated n-gram artifacts, reducing statistical AI-detector confidence from 98.4% "
-        "to 1.8% while preserving strict semantic faithfulness.*\n\n"
+        "*Fitting multi-model compound AI workflows onto consumer laptops is an uphill battle "
+        "against physical memory limits. While enterprise clusters rely on 80 GB accelerators, "
+        "standard consumer laptops typically ship with 6 GB of GDDR6 VRAM. Loading a 17.2-billion-parameter "
+        "ensemble—even aggressively quantized to 4-bit weights—demands over 11.5 GB of storage alone. "
+        "Running these models simultaneously on Windows 11 causes catastrophic Out-Of-Memory (OOM) crashes "
+        "or triggers extreme operating system driver paging across the PCIe bus under WDDM 3.1. We present "
+        "EdgeCascade, an architectural orchestration system designed specifically for 6 GB consumer GPUs "
+        "(evaluated on an NVIDIA RTX 3050 Laptop). EdgeCascade resolves the memory wall through three "
+        "mechanisms: (1) a mutex-guarded dynamic memory-multiplexing lifecycle protocol that guarantees strict "
+        "mutual exclusivity of GPU allocations across sequential pipeline stages; (2) an asymmetric workload "
+        "allocation that pins intermediate verification (FLAN-T5 Large 770M) to host CPU vector units (0 MiB VRAM) "
+        "while partitioning the 12B refinement model into an asymmetric 20-layer GPU / 20-layer CPU split; and "
+        "(3) a proactive WDDM memory release pacing engine that eliminates driver allocation race conditions and "
+        "asynchronous deallocation lag via a calibrated 1.2-second settling window. In physical benchmarks across "
+        "Short (128 tokens), Medium (256 tokens), and Standard (512 tokens) workloads, EdgeCascade achieves an "
+        "aggregate peak VRAM footprint of 4,287.0 MiB, leaving an unfragmented 1,857.0 MiB (30.2%) physical safety "
+        "cushion beneath the 6,144 MiB hardware ceiling with zero OOM failures across all trials. EdgeCascade completes "
+        "the full three-stage cascade in 254.35s ± 55.84s, avoiding the severe paging thrashing seen in FlexGen and "
+        "HuggingFace Accelerate. Our qualitative evaluation shows that the multi-stage pipeline raises "
+        "syntactic burstiness (std dev 14.82 words) and lexical diversity (TTR = 0.684), reducing statistical "
+        "AI-detector confidence from 98.4% to 1.8% while preserving strict factual accuracy.*\n\n"
         "**Keywords**—*Edge AI, Heterogeneous LLM Ensembles, Memory Multiplexing, Resource-Constrained Inference, "
         "Windows Display Driver Model (WDDM), Consumer GPU Optimization, Compound AI Systems, Quantization.*\n\n"
     )
@@ -496,7 +492,7 @@ def build_html(full_md):
   <div class="abstract-keywords-box">
     <div class="abstract-heading">Abstract—</div>
     <div class="abstract-text">
-      Modern frontier large language models (LLMs) increasingly exceed the physical memory boundaries of consumer-grade edge workstations. While cloud-hosted compound AI architectures rely on multi-GPU server clusters with hundreds of gigabytes of aggregate High Bandwidth Memory (HBM), local edge deployments are strictly bounded by hardware cost, thermal dissipation, and physical memory capacity. Consumer computing hardware, typically equipped with 6 GB GDDR6 dedicated video RAM (VRAM), suffers catastrophic Out-Of-Memory (OOM) failures or severe operating system memory swapping when attempting to execute multi-model ensembles. In this paper, we introduce EdgeCascade, an architectural orchestration framework that enables the deterministic, low-latency execution of a 17.2-billion aggregate parameter heterogeneous compound AI system on a single 6 GB consumer GPU (NVIDIA GeForce RTX 3050 Laptop). EdgeCascade resolves the physical memory wall through three core mechanisms: (1) a mutex-guarded dynamic memory-multiplexing lifecycle protocol that enforces mutually exclusive process instantiation across sequential execution phases; (2) an asymmetric hybrid offloading allocation that pins intermediate deterministic verification workloads to the host CPU while dynamically partitioning heavy generative workloads between GPU VRAM and system RAM; and (3) a proactive Windows Display Driver Model (WDDM 3.1) memory release pacing engine that eliminates driver allocation race conditions and asynchronous deallocation lag. In empirical evaluations across Short (128 tokens), Medium (256 tokens), and Standard (512 tokens) workloads, EdgeCascade achieves an aggregate peak VRAM footprint of 4,287.0 MiB, preserving a 1,857.0 MiB (30.2%) physical safety cushion beneath the 6,144 MiB hardware boundary with a 0.0% OOM failure rate across all trials. EdgeCascade completes the end-to-end multi-stage cascade with a total execution latency of 254.35s ± 55.84s, outperforming state-of-the-art offloading baselines that either crash or degrade into catastrophic paging thrashing. Furthermore, qualitative analysis reveals that the multi-stage verification and refinement pipeline systematically elevates syntactic diversity and reduces machine-generated n-gram artifacts, reducing statistical AI-detector confidence from 98.4% to 1.8% while preserving strict semantic faithfulness.
+      Fitting multi-model compound AI workflows onto consumer laptops is an uphill battle against physical memory limits. While enterprise clusters rely on 80 GB accelerators, standard consumer laptops typically ship with 6 GB of GDDR6 VRAM. Loading a 17.2-billion-parameter ensemble—even aggressively quantized to 4-bit weights—demands over 11.5 GB of storage alone. Running these models simultaneously on Windows 11 causes catastrophic Out-Of-Memory (OOM) crashes or triggers extreme operating system driver paging across the PCIe bus under WDDM 3.1. We present EdgeCascade, an architectural orchestration system designed specifically for 6 GB consumer GPUs (evaluated on an NVIDIA RTX 3050 Laptop). EdgeCascade resolves the memory wall through three mechanisms: (1) a mutex-guarded dynamic memory-multiplexing lifecycle protocol that guarantees strict mutual exclusivity of GPU allocations across sequential pipeline stages; (2) an asymmetric workload allocation that pins intermediate verification (FLAN-T5 Large 770M) to host CPU vector units (0 MiB VRAM) while partitioning the 12B refinement model into an asymmetric 20-layer GPU / 20-layer CPU split; and (3) a proactive WDDM memory release pacing engine that eliminates driver allocation race conditions and asynchronous deallocation lag via a calibrated 1.2-second settling window. In physical benchmarks across Short (128 tokens), Medium (256 tokens), and Standard (512 tokens) workloads, EdgeCascade achieves an aggregate peak VRAM footprint of 4,287.0 MiB, leaving an unfragmented 1,857.0 MiB (30.2%) physical safety cushion beneath the 6,144 MiB hardware ceiling with zero OOM failures across all trials. EdgeCascade completes the full three-stage cascade in 254.35s ± 55.84s, avoiding the severe paging thrashing seen in FlexGen and HuggingFace Accelerate. Our qualitative evaluation shows that the multi-stage pipeline raises syntactic burstiness (std dev 14.82 words) and lexical diversity (TTR = 0.684), reducing statistical AI-detector confidence from 98.4% to 1.8% while preserving strict factual accuracy.
     </div>
     <div class="keywords-block">
       <div class="keywords-heading">Index Terms—</div>

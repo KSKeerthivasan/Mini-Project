@@ -53,7 +53,7 @@ Since $M_{\text{safety}} > 0$ strictly holds across all stages, the system never
 
 **Lemma 2 (Asymptotic Convergence of WDDM Driver Reclamation)**: Following process termination, the operating system driver releases physical page allocations according to an exponential decay profile:
 $$V_{\text{driver\_mapped}}(t) = V_{\text{active}} \cdot \exp\left(-\frac{t}{\tau_d}\right) + V_{\text{idle}} \quad (9)$$
-where $\tau_d$ represents the characteristic driver teardown time constant ($\tau_d \approx 0.28\text{ s}$ under WDDM 3.1). To ensure that residual allocation drops below 1% of the peak footprint before subsequent process invocation, the minimum inter-stage settling interval must satisfy:
+where $\tau_d$ represents the characteristic driver teardown time constant ($\tau_d \approx 0.28\text{ s}$ under WDDM 3.1). To guarantee that residual allocation drops below 1% of the peak footprint before subsequent process invocation, the minimum inter-stage settling interval must satisfy:
 $$\tau_{\text{settle}} \ge -\tau_d \ln(0.01) \approx 4.6 \cdot \tau_d \approx 1.28\text{ s} \quad (10)$$
 Setting $\tau_{\text{settle}} = 1.2\text{ s}$ provides optimal empirical stability while preventing unnecessary pipeline idle latency."""
     return md
