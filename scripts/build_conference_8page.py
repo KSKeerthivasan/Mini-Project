@@ -34,11 +34,14 @@ KEYWORDS_TEXT = test_condensed_text.KEYWORDS_TEXT
 
 def get_condensed_markdown_with_60_refs():
     base_md = test_condensed_text.get_condensed_markdown_8p()
-    all_refs_text = "## REFERENCES\n"
+    all_refs_text = "\n## REFERENCES\n"
     for num, txt in all_60_references.ALL_60_REFS:
         cleaned = re.sub(r'\s+\d+\.\s*$', '', txt).strip()
         all_refs_text += f"[{num}] {cleaned}\n"
-    return re.sub(r'## REFERENCES.*', all_refs_text, base_md, flags=re.DOTALL)
+    if "## REFERENCES" in base_md:
+        return re.sub(r'## REFERENCES.*', all_refs_text, base_md, flags=re.DOTALL)
+    else:
+        return base_md + all_refs_text
 
 def build_conference_html(full_md, custom_css=""):
     refs_match = re.search(r'## REFERENCES(.*)', full_md, re.DOTALL)
