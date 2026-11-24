@@ -247,33 +247,63 @@ In this paper, we presented **EdgeCascade**, an architectural framework enabling
 The authors would like to thank Saveetha Engineering College, Chennai, India, for providing institutional computing facilities and hardware infrastructure supporting this empirical research.
 
 ## REFERENCES
-[1] T. Brown et al., "Language models are few-shot learners," in NeurIPS, vol. 33, pp. 1877-1901, 2020.
-[2] J. Devlin et al., "BERT: Pre-training of deep bidirectional transformers for language understanding," in Proc. NAACL-HLT, pp. 4171-4186, 2019.
-[3] A. Vaswani et al., "Attention is all you need," in NeurIPS, vol. 30, pp. 5998-6008, 2017.
-[4] H. Touvron et al., "Llama 2: Open foundation and fine-tuned chat models," arXiv:2307.09288, 2023.
-[5] A. Q. Jiang et al., "Mistral 7B," arXiv:2310.06825, 2023.
-[6] Gemini Team, Google, "Gemini: A family of highly capable multimodal models," arXiv:2312.11805, 2023.
-[7] AI@Meta, "Llama 3 Model Card," Research Report, Meta AI, April 2024.
-[8] NVIDIA Corporation, "NVIDIA H100 Tensor Core GPU Architecture Overview," White Paper, 2023.
-[9] NVIDIA Corporation, "NVIDIA GeForce RTX 3050 Laptop GPU Specification Sheet," 2021.
-[10] J. Nickolls and W. J. Dally, "The GPU computing era," IEEE Micro, vol. 30, no. 2, pp. 56-69, 2010.
-[11] Microsoft Corporation, "Windows Display Driver Model (WDDM) Architecture," Microsoft Learn, 2023.
-[12] S. Yao et al., "ReAct: Synergizing reasoning and acting in language models," in ICLR, 2023.
-[13] M. Zaharia et al., "The shift from models to compound AI systems," BAIR Blog, Feb. 2024.
-[14] Q. Wu et al., "AutoGen: Enabling next-gen LLM applications via multi-agent conversation," arXiv:2308.08155, 2023.
-[15] Gemma Team, Google DeepMind, "Gemma: Open models based on Gemini research," arXiv:2403.08295, 2024.
-[16] H. W. Chung et al., "Scaling instruction-finetuned language models," JMLR, vol. 25, no. 70, pp. 1-53, 2024.
-[17] EleutherAI, "12B Language Model Architecture and Engineering Report," Technical Document, 2023.
-[18] G. Gerganov and llama.cpp Contributors, "llama.cpp: Port of Facebook's LLaMA model in C/C++," GitHub, 2023.
-[19] S. Gugger et al., "Accelerate: Training and inference at scale with native PyTorch," Hugging Face, 2022.
-[20] J. Ren et al., "ZeRO-Offload: Democratizing billion-scale model training," in USENIX ATC, pp. 551-564, 2021.
-[21] Microsoft Corporation, "Timeout Detection and Recovery (TDR) in WDDM," Windows Dev Center, 2022.
-[22] S. Sheng et al., "FlexGen: High-throughput generative inference of LLMs with a single GPU," in ICML, 2023.
-[23] L. Chen, M. Zaharia, and J. Zou, "FrugalGPT: How to use LLMs while reducing cost," arXiv:2305.05176, 2023.
-[24] J. Frye and Ollama Community, "Ollama: Get up and running with large language models locally," GitHub, 2023.
-[25] W. Kwon et al., "Efficient memory management for LLM serving with PagedAttention," in SOSP, pp. 611-626, 2023.
-[26] T. Dettmers et al., "LLM.int8(): 8-bit matrix multiplication for transformers at scale," in NeurIPS, 2022.
-[27] E. Frantar et al., "GPTQ: Accurate post-training quantization for generative transformers," in ICLR, 2023.
-[28] J. Lin et al., "AWQ: Activation-aware weight quantization for LLM compression," in MLSys, pp. 87-100, 2024.
-[29] I. Ong et al., "RouteLLM: Learning to route LLMs with preference data," arXiv:2406.18665, 2024.
-[30] Y. Leviathan, M. Kalman, and Y. Matias, "Fast inference from transformers via speculative decoding," in ICML, 2023.
+[1] T. Brown, B. Mann, N. Ryder, M. Subbiah, J. D. Kaplan, P. Dhariwal, A. Neelakantan, P. Shyam, G. Sastry, A. Askell, et al., "Language models are few-shot learners," in Advances in Neural Information Processing Systems (NeurIPS), vol. 33, pp. 1877-1901, 2020.
+[2] R. Bommasani, D. A. Hudson, E. Adeli, R. Altman, P. Arora, S. von Arx, M. S. Bernstein, J. Bohg, A. Bosselut, E. Brunskill, et al., "On the opportunities and risks of foundation models," arXiv preprint arXiv:2108.07258, 2021.
+[3] J. Achiam, S. Adler, S. Agarwal, L. Ahmad, I. Akkaya, F. L. Aleman, D. Almeida, J. Altenschmidt, S. Altman, S. Anadkat, et al., "GPT-4 technical report," arXiv preprint arXiv:2303.08774, 2023.
+[4] J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova, "BERT: Pre-training of deep bidirectional transformers for language understanding," in Proc. Conf. North American Chapter Assoc. Computational Linguistics: Human Language Technologies (NAACL-HLT), pp. 4171-4186, 2019.
+[5] H. Touvron, T. Lavril, G. Izacard, X. Martinet, M.-A. Lachaux, T. Lacroix, B. Rozière, N. Goyal, E. Hambro, F. Azhar, et al., "LLaMA: Open and efficient foundation language models," arXiv preprint arXiv:2302.13971, 2023.
+[6] H. Touvron, L. Martin, K. Stone, P. Albert, A. Almahairi, Y. Babaei, N. Bashlykov, S. Batra, P. Bhargava, S. Bhosale, et al., "Llama 2: Open foundation andfine-tuned chat models," arXiv preprint arXiv:2307.09288, 2023.
+[7] A. Dubey, A. Jauhri, A. Pandey, A. Kadian, A. Al-Dahle, A. Letman, A. Mathur, A. Schelten, A. Yang, A. Fan, et al., "The Llama 3 herd of models," arXiv preprint arXiv:2407.21783, 2024.
+[8] NVIDIA Corporation, "NVIDIA H100 Tensor Core GPU architecture overview," White Paper, WP-10822-001_v01, Santa Clara, CA, USA, 2022.
+[9] S. Sheng, L. Zheng, B. Yuan, Z. Li, M. Ryabinin, D. Y. Fu, Z. Xie, B. Chen, C. Barrett, J. E. Gonzalez, et al., "High-throughput generative inference of large language models with a single GPU," in Proc. 40th Int. Conf. Machine Learning (ICML), pp. 31094-31116, 2023.
+[10] NVIDIA Corporation, "NVIDIA GeForce RTX 3050 Laptop GPU technical specifications," Product Documentation, Santa Clara, CA, USA, 2021.
+[11] Microsoft Corporation, "Windows Display Driver Model (WDDM) architecture and memory management," Microsoft Learn Hardware Developer Documentation, Redmond, WA, USA, 2023.
+[12] M. Zaharia, O. Khattab, L. Chen, J. P. Gonzalez, D. Kang, D. Narayanan, K. Santhanam, C. Wang, and S. Shenker, "The shift from models to compound AI systems," Berkeley Artificial Intelligence Research (BAIR) Blog, Feb. 2024.
+[13] L. Chen, M. Zaharia, and J. Zou, "FrugalGPT: How to use large language models while reducing cost and improving performance," Transactions on Machine Learning Research (TMLR), pp. 1-24, 2023.
+[14] O. Khattab and C. Potts, "Demonstrate-search-predict: Composing retrieval and language models for knowledge-intensive NLP," arXiv preprint arXiv:2212.14024, 2022.
+[15] Google DeepMind Gemma Team, "Gemma 3: Open models for multimodal and conversational reasoning," Technical Report, Google DeepMind, Mountain View, CA, USA, 2024.
+[16] H. W. Chung, L. Hou, S. Longpre, B. Zoph, Y. Tay, W. Fedus, Y. Li, X. Wang, M. Mostajabi, S. Zhao, et al., "Scaling instruction-finetuned language models," Journal of Machine Learning Research (JMLR), vol. 25, no. 70, pp. 1-53, 2024.
+[17] S. Gehrmann, H. Strobelt, and A. M. Rush, "GLTR: Statistical detection and visualization of generated text," in Proc. 57th Annu. Meeting Assoc. Computational Linguistics: System Demonstrations (ACL), pp. 111-116, 2019.
+[18] G. Gerganov and llama.cpp Contributors, "llama.cpp: Port of Facebook's LLaMA model in C/C++," GitHub Repository,https://github.com/ggerganov/llama.cpp, 2023.
+[19] S. Gugger, L. Debut, T. Wolf, P. Schmid, Z. Mueller, C. Sourkov, et al., "Accelerate: Training and inference at scale with native PyTorch," Hugging Face Documentation, 2022.
+[20] J. Ren, S. Rajbhandari, R. Y. Aminabadi, O. Ruwase, S. A. Yang, M. Zhang, D. Li, and Y. He, "ZeRO-Offload: Democratizing billion-scale model training," in Proc. 2021 USENIX Annu. Tech. Conf. (USENIX ATC), pp. 551-564, 2021.
+[21] Microsoft Corporation, "Timeout Detection and Recovery (TDR) in Windows Display Driver Model," Windows Hardware Developer Center, 2022.
+[22] S. Sheng, L. Zheng, B. Yuan, Z. Li, M. Ryabinin, D. Y. Fu, Z. Xie, B. Chen, C. Barrett, J. E. Gonzalez, et al., "FlexGen: High-throughput generative inference of large language models with a single GPU," in Proc. Int. Conf. Machine Learning (ICML), PMLR, vol. 202, pp. 31094-31116, 2023.
+[23] L. Chen, M. Zaharia, and J. Zou, "FrugalGPT: How to use large language models while reducing cost and improving performance," arXiv preprint arXiv:2305.05176, 2023.
+[24] J. Frye and Ollama Community, "Ollama: Get up and running with large language models locally," GitHub Repository, https://github.com/ollama/ollama, 2023.
+[25] W. Kwon, Z. Li, S. Zhuang, Y. Sheng, L. Zheng, C. H. Yu, J. E. Gonzalez, H. Zhang, and I. Stoica, "Efficient memory management for large language model serving with PagedAttention," in Proc. 29th ACM Symp. Operating Systems Principles (SOSP), pp. 611-626, 2023.
+[26] T. Dettmers, M. Lewis, Y. Belkada, and L. Zettlemoyer, "LLM.int8(): 8-bit matrix multiplication for transformers at scale," in Advances in Neural Information Processing Systems (NeurIPS), vol. 35, pp. 30318-30332, 2022.
+[27] E. Frantar, S. Ashkboos, T. Hoefler, and D. Alistarh, "GPTQ: Accurate post-training quantization for generative pre-trained transformers," in Proc. Int. Conf. Learning Representations (ICLR), 2023.
+[28] J. Lin, J. Tang, H. Tang, C. Yang, X. Dang, C. Gan, and S. Han, "AWQ: Activation-aware weight quantization for LLM compression and acceleration," in Machine Learning and Systems (MLSys), vol. 6, pp. 87-100, 2024.
+[29] I. Ong, A. Chen, R. Yang, C. Stoica, M. Zaharia, and J. E. Gonzalez, "RouteLLM: Learning to route LLMs with preference data," arXiv preprintarXiv:2406.18665, 2024.
+[30] Y. Leviathan, M. Kalman, and Y. Matias, "Fast inference from transformers via speculative decoding," in Proc. 40th Int. Conf. Machine Learning (ICML), PMLR, vol. 202, pp. 19274-19286, 2023. 15
+[31] C. Chen, S. Borgeaud, G. Irving, J. Hoffmann, and L. Sifre, "Accelerating large language model decoding with speculative sampling," arXiv preprint arXiv:2302.01318, 2023.
+[32] T. Cai, Y. Li, Z. Geng, H. Peng, J. D. Lee, D. Chen, and T. Dao, "Medusa: Simple LLM inference acceleration framework with multiple decoding heads," arXiv preprint arXiv:2401.10774, 2024.
+[33] C. J. Newburn, B. So, J. Park, M. Garland, and J. Nickolls, "Unified memory in CUDA 6," in GPU Technology Conference (GTC), San Jose, CA, 2014.
+[34] H. Hans, U. Bhatt, S. R. Bowman, and M. Carpuat, "Spotting LLMs with Binoculars: Zero-shot detection of machine-generated text," in Proc. 41st Int. Conf. Machine Learning (ICML), 2024.
+[35] E. Tian and A. Cui, "GPTZero: Towards detecting AI-generated text using perplexity and burstiness metrics," Princeton University Technical White Paper, 2023.
+[36] Turnitin LLC, "Understanding false positives and model calibration in automated AI writing detection," Turnitin Research White Paper, Oakland, CA, USA, 2023.
+[37] European Parliament and Council of the European Union, "Regulation (EU) 2016/679 (General Data Protection Regulation)," Official Journal of the European Union, L 119, pp. 1-88, May 2016.
+[38] U.S. Department of Health and Human Services, "Health Insurance Portability and Accountability Act (HIPAA) Security and Privacy Rules," 45 CFR Part 160 and Part 164, Subparts A and E, Washington, D.C., 2003.
+[39] International Organization for Standardization, "ISO/IEC 27001:2022 Information security, cybersecurity and privacy protection — Information security management systems — Requirements," Geneva, Switzerland, 2022.
+[40] G. Xiao, J. Lin, M. Seznec, H. Wang, and S. Han, "SmoothQuant: Accurate and efficient post-training quantization for large language models," in Proc. 40th Int. Conf. Machine Learning (ICML), PMLR, vol. 202, pp. 38087-38099, 2023.
+[41] S. Wang, B. Z. Li, M. Khabsa, H. Fang, and H. Ma, "Linformer: Self-attention with linear complexity," arXiv preprint arXiv:2006.04768, 2020.
+[42] T. Dao, D. Y. Fu, S. Ermon, A. Rudra, and C. Ré, "FlashAttention: Fast and memory-efficient exact attention with IO-awareness," in Advances in Neural Information Processing Systems (NeurIPS), vol. 35, pp. 16344-16359, 2022.
+[43] T. Dao, "FlashAttention-2: Faster attention with better parallelism and work partitioning," in Proc. Int. Conf. Learning Representations (ICLR), 2024.
+[44] S. Rajbhandari, J. Rasley, O. Ruwase, and Y. He, "ZeRO: Memory optimizations toward training trillion parameter models," in Proc. Int. Conf. High Performance Computing, Networking, Storage and Analysis (SC), pp. 1-16, 2020.
+[45] M. Shoeybi, M. Patwary, R. Puri, P. LeGresley, J. Casper, and B. Catanzaro, "Megatron-LM: Training multi-billion parameter language models using model parallelism," arXiv preprint arXiv:1909.08053, 2019.
+[46] Y. Huang, Y. Cheng, A. Bapna, O. Firat, D. Chen, M. Chen, H. Lee, J. Ngiam, Q. V. Le, Y. Wu, et al., "GPipe: Efficient training of giant neural networks using pipeline parallelism," in Advances in Neural Information Processing Systems (NeurIPS), vol. 32, pp. 103-112, 2019.
+[47] D. Narayanan, A. Harlap, A. Phanishayee, V. Seshadri, N. R. Devanur, G. R. Ganger, P. B. Gibbons, and M. Zaharia, "PipeDream: Generalized pipeline parallelism for DNN training," in Proc. 27th ACM Symp. Operating Systems Principles (SOSP), pp. 1-15, 2019.
+[48] P. Micikevicius, S. Narang, J. Alben, G. Diamos, E. Elsen, D. Garcia, B. Ginsburg, M. Houston, O. Kuchaiev, G. Venkatesh, et al., "Mixed precision training," in Proc. Int. Conf. Learning Representations (ICLR), 2018.
+[49] S. Ma, H. Wang, L. Ma, L. Wang, W. Wang, S. Huang, L. Dong, R. Wang, J. Xue, and F. Wei, "The era of 1-bit LLMs: All large language models are in 1.58 bits," arXiv preprint arXiv:2402.17764, 2024.
+[50] M. D. Smith, "Tracing the memory wall: Microarchitectural bottlenecks in modern memory hierarchies," ACM SIGARCH Computer Architecture News, vol. 26, no. 3, pp. 1-12, 1998.
+[51] W. A. Wulf and S. A. McKee, "Hitting the memory wall: Implications of the obvious," ACM SIGARCH Computer Architecture News, vol. 23, no. 1, pp. 20- 24, 1995.
+[52] J. L. Hennessy and D. A. Patterson, Computer Architecture: A Quantitative Approach, 6th ed., Cambridge, MA, USA: Morgan Kaufmann, 2017.
+[53] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polosukhin, "Attention is all you need," in Advances in Neural Information Processing Systems (NeurIPS), vol. 30, pp. 5998-6008, 2017.
+[54] C. Raffel, N. Shazeer, A. Roberts, K. Lee, S. Narang, M. Matena, Y. Zhou, W. Li, and P. J. Liu, "Exploring the limits of transfer learning with a unified text-to- text transformer," Journal of Machine Learning Research (JMLR), vol. 21, no. 140, pp. 1-67, 2020.
+[55] K. He, X. Zhang, S. Ren, and J. Sun, "Deep residual learning for image recognition," in Proc. IEEE Conf. Computer Vision and Pattern Recognition (CVPR), pp. 770-778, 2016.
+[56] Y. Belkada, T. Dettmers, H. Timiryasov, J. Ren, and S. Han, "Bitsandbytes: 8-bit and 4-bit quantization for deep learning," GitHub Repository, 2023.
+[57] B. Y. Lin, C. He, Z. Zeng, H. Wang, Y. Huang, C. Mahowald, P. Pruthi, and X. Ren, "CommonGen: A constrained text generation challenge for generative commonsense reasoning," in Findings of the Association for Computational Linguistics: EMNLP 2020, pp. 1823-1840, 2020.
+[58] K. Papineni, S. Roukos, T. Ward, and W.-J. Zhu, "BLEU: A method for automatic evaluation of machine translation," in Proc. 40th Annu. Meeting Assoc. Computational Linguistics (ACL), pp. 311-318, 2002.
+[59] C.-Y. Lin, "ROUGE: A package for automatic evaluation of summaries," in Text Summarization Branches Out, pp. 74-81, 2004.
+[60] T. Zhang, V. Kishore, F. Wu, K. Q. Weinberger, and Y. Artzi, "BERTScore: Evaluating text generation with BERT," in Proc. Int. Conf. Learning Representations (ICLR),

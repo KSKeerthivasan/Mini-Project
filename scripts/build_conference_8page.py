@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Build Exact 8-Page IEEE Conference Paper
+Build Exact 8-Page IEEE Conference Paper with ALL 60 REFERENCES
 Title: SLM-Based EdgeCascade: Dynamic Memory-Aware Orchestration of Heterogeneous Language Models for Fact-Grounded, Plagiarism-Resistant and Human-Like short Content Generation on Consumer Hardware
 """
 
@@ -16,15 +16,13 @@ if SCRIPTS_DIR not in sys.path:
 
 from render_tables_and_figures import match_and_render_block
 import test_condensed_text
+import all_60_references
 
 ORIGINAL_PDF_1 = os.path.abspath("research-discovery/EdgeCascade_IEEE_Paper.pdf")
 ORIGINAL_PDF_2 = os.path.abspath("research-discovery/EdgeCascade_IEEE_Paper_Humanized.pdf")
 
 assert os.path.exists(ORIGINAL_PDF_1), f"Original PDF missing: {ORIGINAL_PDF_1}"
 assert os.path.exists(ORIGINAL_PDF_2), f"Humanized PDF missing: {ORIGINAL_PDF_2}"
-
-mtime_1 = os.path.getmtime(ORIGINAL_PDF_1)
-mtime_2 = os.path.getmtime(ORIGINAL_PDF_2)
 
 TARGET_MD = os.path.abspath("research-discovery/EdgeCascade_IEEE_Conference_A4_Manuscript.md")
 TARGET_HTML = os.path.abspath("research-discovery/edge_cascade_ieee_conference_a4_print.html")
@@ -34,8 +32,13 @@ TITLE_TEXT = test_condensed_text.TITLE_TEXT
 ABSTRACT_TEXT = test_condensed_text.ABSTRACT_TEXT
 KEYWORDS_TEXT = test_condensed_text.KEYWORDS_TEXT
 
-def get_condensed_markdown():
-    return test_condensed_text.get_condensed_markdown_8p()
+def get_condensed_markdown_with_60_refs():
+    base_md = test_condensed_text.get_condensed_markdown_8p()
+    all_refs_text = "## REFERENCES\n"
+    for num, txt in all_60_references.ALL_60_REFS:
+        cleaned = re.sub(r'\s+\d+\.\s*$', '', txt).strip()
+        all_refs_text += f"[{num}] {cleaned}\n"
+    return re.sub(r'## REFERENCES.*', all_refs_text, base_md, flags=re.DOTALL)
 
 def build_conference_html(full_md, custom_css=""):
     refs_match = re.search(r'## REFERENCES(.*)', full_md, re.DOTALL)
@@ -334,17 +337,17 @@ def build_conference_html(full_md, custom_css=""):
   
   .references-container {{
     margin-top: 2.5pt;
-    font-size: 6.5pt;
-    line-height: 1.02;
+    font-size: 5.4pt;
+    line-height: 1.01;
   }}
   
   ol.ref-list {{
     margin: 0;
-    padding-left: 9pt;
+    padding-left: 8pt;
   }}
   
   li.ref-item {{
-    margin-bottom: 0.5pt;
+    margin-bottom: 0.3pt;
     text-align: justify;
   }}
   {custom_css}
@@ -491,7 +494,7 @@ def build_conference_html(full_md, custom_css=""):
     return html_header + "".join(body_html_parts) + footer_html
 
 def compile_pdf(custom_css=""):
-    md = get_condensed_markdown()
+    md = get_condensed_markdown_with_60_refs()
     with open(TARGET_MD, "w", encoding="utf-8") as f:
         f.write(md)
         
