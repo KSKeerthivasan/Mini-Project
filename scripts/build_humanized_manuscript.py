@@ -39,12 +39,12 @@ assert os.path.exists(ORIGINAL_PDF), f"Original PDF missing: {ORIGINAL_PDF}"
 orig_mtime = os.path.getmtime(ORIGINAL_PDF)
 
 def build_markdown():
-    title = "# EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on 6 GB Consumer GPUs\n\n"
+    title = "# EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on Resource-Constrained Consumer GPUs\n\n"
     author_block = "**Keerthivasan K. S.**  \n*Department of Computer Science and Engineering, Research Laboratory for Edge Intelligence Systems*\n\n"
     
     abstract_text = (
         "### Abstract\n"
-        "*Running multi-model compound AI pipelines on standard consumer laptops is notoriously difficult because of physical memory limits. While cloud data centers use 80 GB accelerators, most consumer laptops have only 6 GB of GDDR6 VRAM. Even with aggressive 4-bit quantization, loading a 17.2-billion parameter ensemble takes over 11.5 GB of storage. Trying to run these models together on Windows 11 immediately triggers Out-Of-Memory (OOM) crashes or causes severe driver paging across the PCIe bus. In this paper, we introduce **EdgeCascade**, an orchestration framework designed specifically for 6 GB consumer laptops.*\n\n"
+        "*Running multi-model compound AI pipelines on standard consumer laptops is notoriously difficult because of physical memory limits. While cloud data centers use 80 GB accelerators, most consumer laptops have only 6 GB of GDDR6 VRAM. Even with aggressive 4-bit quantization, loading a 17.2-billion parameter ensemble takes over 11.5 GB of storage. Trying to run these models together on Windows 11 immediately triggers Out-Of-Memory (OOM) crashes or causes severe driver paging across the PCIe bus. In this paper, we introduce **EdgeCascade**, an orchestration framework designed specifically for resource-constrained consumer GPUs (empirically evaluated on an NVIDIA RTX 3050 Laptop).*\n\n"
         "*We solve this memory bottleneck with three practical techniques. First, EdgeCascade uses an operating-system mutex lock. This ensures that only one model occupies GPU memory at any point in time. Second, we split workloads unevenly across available hardware. We run intermediate verification on host CPU cores (0 MiB VRAM), and we split the final 12B model across 20 GPU layers and 20 CPU layers. Third, we add an active 1.2-second settling delay between stages. This gives the Windows Display Driver Model (WDDM 3.1) time to reclaim allocations before the next model starts.*\n\n"
         "*We tested EdgeCascade on an NVIDIA GeForce RTX 3050 Laptop GPU. Across short, medium, and standard workloads, peak GPU memory stayed at 4,287.0 MiB. This left a physical safety cushion of 1,857.0 MiB (30.2% headroom) beneath the 6,144 MiB hardware ceiling. Across all test runs, our system experienced zero OOM crashes. The full three-stage cascade finished in 254.35s ± 55.84s without the severe paging delays seen in baseline frameworks. Our multi-stage pipeline also increased syntactic burstiness and lexical diversity, bringing AI detector confidence down from 98.4% to 1.8% while keeping technical facts accurate.*\n\n"
         "**Keywords**—*Edge AI, Heterogeneous LLM Ensembles, Memory Multiplexing, Resource-Constrained Inference, Windows Display Driver Model (WDDM), Consumer GPU Optimization, Compound AI Systems, Quantization.*\n\n"
@@ -81,7 +81,7 @@ def build_html(full_md):
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on 6 GB Consumer GPUs</title>
+<title>EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on Resource-Constrained Consumer GPUs</title>
 <style>
   @page {
     size: letter;
@@ -351,7 +351,7 @@ def build_html(full_md):
 <body>
 
 <div class="header-container">
-  <h1 class="paper-title">EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on 6 GB Consumer GPUs</h1>
+  <h1 class="paper-title">EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on Resource-Constrained Consumer GPUs</h1>
   <div class="author-block">
     <div class="author-name">Keerthivasan K. S.</div>
     <div class="author-affil">Department of Computer Science and Engineering, Research Laboratory for Edge Intelligence Systems</div>

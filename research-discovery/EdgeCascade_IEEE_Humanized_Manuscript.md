@@ -1,10 +1,10 @@
-# EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on 6 GB Consumer GPUs
+# EdgeCascade: Dynamic Memory-Multiplexed Orchestration of Heterogeneous LLM Ensembles on Resource-Constrained Consumer GPUs
 
 **Keerthivasan K. S.**  
 *Department of Computer Science and Engineering, Research Laboratory for Edge Intelligence Systems*
 
 ### Abstract
-*Running multi-model compound AI pipelines on standard consumer laptops is notoriously difficult because of physical memory limits. While cloud data centers use 80 GB accelerators, most consumer laptops have only 6 GB of GDDR6 VRAM. Even with aggressive 4-bit quantization, loading a 17.2-billion parameter ensemble takes over 11.5 GB of storage. Trying to run these models together on Windows 11 immediately triggers Out-Of-Memory (OOM) crashes or causes severe driver paging across the PCIe bus. In this paper, we introduce **EdgeCascade**, an orchestration framework designed specifically for 6 GB consumer laptops.*
+*Running multi-model compound AI pipelines on standard consumer laptops is notoriously difficult because of physical memory limits. While cloud data centers use 80 GB accelerators, most consumer laptops have only 6 GB of GDDR6 VRAM. Even with aggressive 4-bit quantization, loading a 17.2-billion parameter ensemble takes over 11.5 GB of storage. Trying to run these models together on Windows 11 immediately triggers Out-Of-Memory (OOM) crashes or causes severe driver paging across the PCIe bus. In this paper, we introduce **EdgeCascade**, an orchestration framework designed specifically for resource-constrained consumer GPUs (empirically evaluated on an NVIDIA RTX 3050 Laptop).*
 
 *We solve this memory bottleneck with three practical techniques. First, EdgeCascade uses an operating-system mutex lock. This ensures that only one model occupies GPU memory at any point in time. Second, we split workloads unevenly across available hardware. We run intermediate verification on host CPU cores (0 MiB VRAM), and we split the final 12B model across 20 GPU layers and 20 CPU layers. Third, we add an active 1.2-second settling delay between stages. This gives the Windows Display Driver Model (WDDM 3.1) time to reclaim allocations before the next model starts.*
 
